@@ -182,26 +182,50 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function showCoreItemsCheck(container, missingItems) {
-    // Generate a small pool of extra common core items to suggest alongside missing ones (e.g., bread, eggs, potatoes, cheese, chicken)
-    const commonExtras = ["bread", "eggs", "potato", "cheese", "chicken", "tomato"];
-    const extraSuggestions = commonExtras.filter(item => !userTypedIngredients.includes(item) && !missingItems.includes(item)).slice(0, 3);
-    const combinedChecklistItems = [...missingItems, ...extraSuggestions];
+    // Generate unique dynamic extra core items without duplicates
+    const pool = ["bread", "eggs", "potato", "cheese", "chicken", "tomato", "rice", "onion", "lettuce"];
+    const dynamicExtras = pool.filter(item => 
+        !userTypedIngredients.includes(item) && !missingItems.includes(item)
+    ).slice(0, 2);
+
+    const combinedSuggestions = [...new Set([...missingItems, ...dynamicExtras])];
 
     container.innerHTML = `
         <div class="pantry-box" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px;">
             <h3>Core Items Check</h3>
-            <p>Do you have these core items available to unlock more recipe options?</p>
+            <p>Do you have the missing core items required for these recipes (like <strong>${missingItems.join(', ')}</strong>)?</p>
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button id="core-opt-yes" style="background-color: #28a745; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; flex: 1;">1. Yes, I have all</button>
+                <button id="core-opt-no" style="background-color: #ffc107; color: #333; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; flex: 1;">2. I don't have some</button>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('core-opt-yes').addEventListener('click', () => {
+        // If user says Yes, proceed directly with all required missing core items
+        showPantryCheck(container, [...userTypedIngredients, ...missingItems]);
+    });
+
+    document.getElementById('core-opt-no').addEventListener('click', () => {
+        // If user says No, display the interactive checklist with unique items
+        showCoreSelectionChecklist(container, combinedSuggestions);
+    });
+}
+
+function showCoreSelectionChecklist(container, suggestions) {
+    container.innerHTML = `
+        <div class="pantry-box" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px;">
+            <h3>Select the Core Items You Have</h3>
+            <p>Check which of these core items you currently own:</p>
             <div style="display: flex; flex-direction: column; gap: 8px; margin: 15px 0;">
-                ${combinedChecklistItems.map(item => `
+                ${suggestions.map(item => `
                     <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                        <input type="checkbox" class="core-checkbox" value="${item}" ${missingItems.includes(item) ? 'checked' : ''} style="width: 18px; height: 18px;">
+                        <input type="checkbox" class="core-checkbox" value="${item}" checked style="width: 18px; height: 18px;">
                         <span style="text-transform: capitalize;">${item}</span>
                     </label>
                 `).join('')}
             </div>
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button id="confirm-core-items" style="background-color: #28a745; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; flex: 1;">Continue with Selected Items</button>
-            </div>
+            <button id="confirm-core-items" style="background-color: #007bff; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%;">Continue with Selected</button>
         </div>
     `;
 
@@ -221,7 +245,7 @@ function showCoreItemsCheck(container, missingItems) {
             container.innerHTML = `
                 <div class="notice-box" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center;">
                     <p style="color: #d9534f; font-weight: bold; font-size: 1.1rem;">Unfortunately, a proper meal can't be made from this.</p>
-                    <p style="color: #555; margin-top: 8px;">You are missing core ingredients required for these dishes. Please check more items or try different ones!</p>
+                    <p style="color: #555; margin-top: 8px;">You are missing core ingredients required for these dishes. Please try different items!</p>
                 </div>
             `;
             return;

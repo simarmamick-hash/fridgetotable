@@ -4,102 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FridgeToTable</title>
-    
-    <!-- PWA Manifest Link -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#10b981">
-
-    <style>
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background-color: #f9fafb;
-            color: #1f2937;
-            max-width: 650px;
-            margin: 40px auto;
-            padding: 20px;
-            text-align: center;
-        }
-        h1 { color: #10b981; }
-        .card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            margin-top: 15px;
-            text-align: left;
-            border-left: 5px solid #10b981;
-        }
-        input {
-            width: 80%;
-            padding: 12px;
-            font-size: 16px;
-            margin: 10px 0;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-        }
-        button {
-            background-color: #10b981;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            font-size: 16px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        button:hover { background-color: #059669; }
-        .recipe-title { color: #059669; margin-top: 0; }
-        #results-container { margin-top: 20px; display: none; }
-    </style>
+    <link rel="manifest" href="./manifest.json">
+    <link rel="stylesheet" href="./src/styles/main.css">
 </head>
 <body>
+    <header>
+        <h1>FridgeToTable</h1>
+        <p>Turn what's in your fridge into a delicious meal.</p>
+    </header>
 
-    <h1>FridgeToTable 🚀</h1>
-    <p>Type what ingredients you have in your fridge:</p>
-    
-    <input type="text" id="ingredients" placeholder="e.g. eggs, cheese, tomatoes, bread">
-    <br>
-    <button onclick="generateRecipes()">Generate 3 Recipe Options</button>
+    <main>
+        <section class="input-section">
+            <label for="ingredients">Enter your ingredients (comma separated):</label>
+            <input type="text" id="ingredients" placeholder="e.g., tomato, cheese, bread">
+            <button id="generate-btn">Generate Recipes</button>
+        </section>
 
-    <div id="results-container">
-        <h3>Here are 3 ways to use your ingredients:</h3>
-        <div id="recipe1" class="card"></div>
-        <div id="recipe2" class="card"></div>
-        <div id="recipe3" class="card"></div>
-    </div>
+        <section id="recipe-results" class="results-section">
+            <!-- Recipes will be injected here dynamically -->
+        </section>
+    </main>
+
+    <!-- Load our core logic as an ES Module -->
+    <script type="module" src="./src/features/recipeGenerator.js"></script>
 
     <script>
-        function generateRecipes() {
-            const input = document.getElementById('ingredients').value.toLowerCase().trim();
-            const container = document.getElementById('results-container');
-            
-            if (!input) {
-                alert('Please enter at least one ingredient!');
-                return;
-            }
-
-            // Generate 3 dynamic options based on user input
-            const r1 = {
-                title: "Option 1: Quick Skillet Hash",
-                desc: `Chop up your core ingredients (${input}), toss them into a hot pan with a splash of oil, and sauté for 6-8 minutes until golden brown and tender.`
-            };
-
-            const r2 = {
-                title: "Option 2: Comfort Bowl / Stir-Fry",
-                desc: `Heat oil in a pan, add your ingredients (${input}), season generously with salt, pepper, or any spices you have on hand, and toss on medium-high heat for 5 minutes.`
-            };
-
-            const r3 = {
-                title: "Option 3: Open-Face Toast or Wrap",
-                desc: `Layer your ingredients (${input}) over a slice of toasted bread, tortilla, or flatbread. Toast it in a pan or oven until warm and delicious!`
-            };
-
-            document.getElementById('recipe1').innerHTML = `<h4 class="recipe-title">${r1.title}</h4><p>${r1.desc}</p>`;
-            document.getElementById('recipe2').innerHTML = `<h4 class="recipe-title">${r2.title}</h4><p>${r2.desc}</p>`;
-            document.getElementById('recipe3').innerHTML = `<h4 class="recipe-title">${r3.title}</h4><p>${r3.desc}</p>`;
-
-            container.style.display = 'block';
+        // Register Service Worker for PWA offline support
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker registered! Scope:', reg.scope))
+                    .catch(err => console.log('Service Worker registration failed:', err));
+            });
         }
     </script>
-
 </body>
 </html>

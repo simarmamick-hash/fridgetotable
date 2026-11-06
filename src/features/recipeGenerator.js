@@ -219,4 +219,167 @@ function showCoreItemsCheck(container, missingItems) {
 
         if (validRecipes.length === 0) {
             container.innerHTML = `
-                <div class="notice-box" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px
+                <div class="notice-box" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center;">
+                    <p style="color: #d9534f; font-weight: bold; font-size: 1.1rem;">Unfortunately, a proper meal can't be made from this.</p>
+                    <p style="color: #555; margin-top: 8px;">You are missing core ingredients required for these dishes. Please check more items or try different ones!</p>
+                </div>
+            `;
+            return;
+        }
+
+        pendingRecipes = validRecipes;
+        showPantryCheck(container, finalAvailableCores);
+    });
+}
+
+function showPantryCheck(container, availableCores) {
+    const allPantryItems = [...new Set(pendingRecipes.flatMap(r => r.pantryItems))];
+    const neverAskAgain = localStorage.getItem('pantryApprovedAlways') === 'true';
+
+    if (neverAskAgain || allPantryItems.length === 0) {
+        renderFinalResults(pendingRecipes, allPantryItems, container);
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="pantry-box" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px;">
+            <h3>Pantry & Masala Check</h3>
+            <p>These recipes require standard items: <strong>${allPantryItems.join(', ')}</strong>.</p>
+            <p>Do you have and approve using these?</p>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+                <button id="pantry-opt-1" style="background-color: #28a745; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer;">1. Yes, I have them</button>
+                <button id="pantry-opt-2" style="background-color: #ffc107; color: #333; border: none; padding: 10px; border-radius: 6px; cursor: pointer;">2. No, I don't have some of these</button>
+                <button id="pantry-opt-3" style="background-color: #007bff; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer;">3. Yes, I have them and never ask me again</button>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('pantry-opt-1').addEventListener('click', () => {
+        renderFinalResults(pendingRecipes, allPantryItems, container);
+    });
+
+    document.getElementById('pantry-opt-2').addEventListener('click', () => {
+        showPantrySelectionChecklist(container, allPantryItems);
+    });
+
+    document.getElementById('pantry-opt-3').addEventListener('click', () => {
+        localStorage.setItem('pantryApprovedAlways', 'true');
+        renderFinalResults(pendingRecipes, allPantryItems, container);
+    });
+}
+
+function showPantrySelectionChecklist(container, allPantryItems) {
+    let checklistHtml = `
+        <div class="pantry-box" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px;">
+            <h3>Select the Pantry Items You Have</h3>
+            <p>Check the items you currently own from the list below:</p>
+            <div style="display: flex; flex-direction: column; gap: 8px; margin: 15px 0;">
+    `;
+
+    allPantryItems.forEach((item) => {
+        checklistHtml += `
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" class="pantry-checkbox" value="${item}" checked style="width: 18px; height: 18px;">
+                <span>${item}</span>
+            </label>
+        `;
+    });
+
+    checklistHtml += `
+            </div>
+            <button id="confirm-custom-pantry" style="background-color: #ff6b6b; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%;">Continue with Selected Items</button>
+        </div>
+    `;
+
+    container.innerHTML = checklistHtml;
+
+    document.getElementById('confirm-custom-pantry').addEventListener('click', () => {
+        const checkboxes = container.querySelectorAll('.pantry-checkbox');
+        const userApprovedItems = Array.from(checkboxes)
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
+
+        const validRecipes = pendingRecipes.filter(recipe => {
+            return recipe.pantryItems.every(item => userApprovedItems.includes(item));
+        });
+
+        if (validRecipes.length === 0) {
+            container.innerHTML = `
+                <div class="notice-box" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center;">
+                    <p style="color: #d9534f; font-weight: bold; font-size: 1.1rem;">Unfortunately, a proper meal can't be made with your selected items.</p>
+                    <p style="color: #555; margin-top: 8px;">Please check required pantry staples and try again!</p>
+                </div>
+            `;
+            return;
+        }
+
+        renderFinalResults(validRecipes, userApprovedItems, container);
+    });
+}
+
+function renderFinalResults(recipes, pantryUsed, container) {
+    let html = `
+        <div class="notice-box" style="margin-bottom: 15px; font-style: italic; color: #555;">
+            <p>These recipes will use standard items: <strong>${pantryUsed.length > 0 ? pantryUsed.join(', ') : 'None'}</strong>.</p>
+        </div>
+        <h2>Your Recommended Recipes (${recipes.length} available)</h2>
+    `;
+    
+    recipes.forEach((recipe, index) => {
+        html += `
+            <div class="recipe-card" style="background: white; padding: 16px; border-radius: 8px; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                <h3>${recipe.title}</h3>
+                
+                <div class="recipe-section" style="margin-top: 10px;">
+                    <strong>Ingredients & Quantities:</strong>
+                    <ul style="margin-left: 20px; margin-top: 5px;">
+                        ${recipe.ingredients.map(ing => `<li>${ing}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="recipe-section" style="margin-top: 10px;">
+                    <strong>Original Method (Pan / Gas):</strong>
+                    <ol style="margin-left: 20px; margin-top: 5px;">
+                        ${recipe.instructions.map(step => `<li style="margin-bottom: 4px;">${step}</li>`).join('')}
+                    </ol>
+                </div>
+        `;
+
+        if (recipe.altCookingMethod) {
+            html += `
+                <div class="alt-appliance-section" style="margin-top: 15px; border-top: 1px dashed #e0e0e0; padding-top: 10px;">
+                    <p style="font-size: 0.9rem; color: #444; margin-bottom: 8px;">Want to cook this using an alternative appliance instead of gas/pan?</p>
+                    <button class="toggle-alt-btn" data-index="${index}" style="background-color: #6c757d; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: bold;">
+                        + View ${recipe.altCookingMethod.appliance}
+                    </button>
+                    <div id="alt-box-${index}" style="display: none; margin-top: 12px; background: #fdfdfd; padding: 10px; border-left: 3px solid #007bff; border-radius: 4px;">
+                        <strong style="color: #007bff;">${recipe.altCookingMethod.appliance}:</strong>
+                        <ol style="margin-left: 20px; margin-top: 5px;">
+                            ${recipe.altCookingMethod.instructions.map(step => `<li style="margin-bottom: 4px;">${step}</li>`).join('')}
+                        </ol>
+                    </div>
+                </div>
+            `;
+        }
+
+        html += `</div>`;
+    });
+    
+    container.innerHTML = html;
+
+    container.querySelectorAll('.toggle-alt-btn').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const idx = e.target.getAttribute('data-index');
+            const altBox = document.getElementById(`alt-box-${idx}`);
+            if (altBox.style.display === 'none') {
+                altBox.style.display = 'block';
+                e.target.textContent = `- Hide Alternative Method`;
+                e.target.style.backgroundColor = '#dc3545';
+            } else {
+                altBox.style.display = 'none';
+                e.target.textContent = `+ View ${recipes[idx].altCookingMethod.appliance}`;
+                e.target.style.backgroundColor = '#6c757d';
+            }
+        });
+    });
+}

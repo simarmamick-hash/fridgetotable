@@ -1,4 +1,4 @@
-// Expanded recipe database with original gas/pan methods and optional alternative appliance methods
+// Expanded recipe database ensuring up to 3 diverse recipes can be generated
 const recipeDatabase = [
     {
         title: "Aloo Tomato Quick Curry",
@@ -75,42 +75,75 @@ const recipeDatabase = [
         }
     },
     {
-        title: "Quick Potato & Cheese Sandwich",
-        coreIngredients: ["bread", "potato", "cheese"],
-        pantryItems: ["butter", "chaat masala"],
-        ingredients: ["2 bread slices", "1 boiled potato (mashed)", "2 slices or 3 tbsp cheese", "1 tbsp butter", "1/2 tsp chaat masala"],
+        title: "Tomato Cheese Skillet Melt",
+        coreIngredients: ["tomato", "cheese"],
+        pantryItems: ["butter", "garlic", "black pepper"],
+        ingredients: ["2 ripe tomatoes (sliced thick)", "1/2 cup grated cheese", "1 tbsp butter", "1 clove minced garlic", "Crushed black pepper to taste"],
         instructions: [
-            "Season the mashed potato with salt and chaat masala, mixing well.",
-            "Spread the seasoned potato over a bread slice and top with cheese, covering with the second slice.",
-            "Apply butter on the outer side of the bread.",
-            "Grill on a pan over medium flame for 2-3 minutes per side until golden brown and the cheese inside melts completely."
+            "Melt butter in a pan on medium flame and sauté minced garlic for 30 seconds.",
+            "Place thick tomato slices flat on the pan and sear for 2 minutes.",
+            "Cover generously with grated cheese and black pepper.",
+            "Cover with a lid, turn flame to low (sim), and cook for 3 minutes until the cheese is melted and bubbly."
         ],
         altCookingMethod: {
             appliance: "OTG / Oven Method",
             instructions: [
-                "Assemble the sandwich with potatoes, cheese, and a light butter coat on the outside.",
-                "Place on a baking tray inside an OTG preheated to 180°C.",
-                "Bake/grill for 4-5 minutes on each side until golden and the cheese inside is gooey and melted."
+                "Arrange thick tomato slices on a baking tray, top with garlic butter, cheese, and pepper.",
+                "Bake in an OTG preheated to 180°C for 6-8 minutes until bubbly and golden."
             ]
         }
+    },
+    {
+        title: "Healthy Chicken & Lettuce Salad Bowl",
+        coreIngredients: ["chicken", "lettuce"],
+        pantryItems: ["olive oil", "lemon juice", "salt", "black pepper"],
+        ingredients: ["150g chicken breast (cubed)", "2 cups fresh lettuce leaves (washed & chopped)", "1 tbsp olive oil", "1 tsp lemon juice", "Salt and crushed black pepper to taste"],
+        instructions: [
+            "Heat olive oil in a pan on medium flame, add chicken cubes, salt, and pepper.",
+            "Sauté on medium flame for 6-8 minutes until fully cooked, golden, and tender.",
+            "In a large bowl, toss the fresh chopped lettuce with lemon juice.",
+            "Top the bed of crunchy lettuce with your warm, seasoned chicken chunks and serve fresh."
+        ],
+        altCookingMethod: {
+            appliance: "OTG / Oven Method",
+            instructions: [
+                "Marinate chicken cubes with olive oil, salt, and pepper.",
+                "Place on a baking tray and bake in an OTG preheated to 190°C for 12-15 minutes until juicy and cooked through.",
+                "Serve warm over fresh lettuce leaves."
+            ]
+        }
+    },
+    {
+        title: "Chicken & Potato Homestyle Curry",
+        coreIngredients: ["chicken", "potato", "tomato"],
+        pantryItems: ["oil", "onion", "garlic", "turmeric", "salt"],
+        ingredients: ["200g chicken pieces", "2 medium potatoes (peeled & halved)", "1 tomato (chopped)", "1 onion (chopped)", "1 tbsp oil", "1 tsp garlic paste", "1/2 tsp turmeric and salt to taste"],
+        instructions: [
+            "Heat oil in a pan on medium flame, sauté chopped onions and garlic paste for 2-3 minutes until golden.",
+            "Add chopped tomatoes and turmeric, cooking on medium flame for 3 minutes until soft.",
+            "Toss in the chicken pieces and potato halves, searing them in the masala for 4 minutes.",
+            "Add 1 cup water, cover with a lid, turn flame to low (sim), and simmer for 15-18 minutes until chicken and potatoes are tender."
+        ],
+        altCookingMethod: null
     }
 ];
 
-// Helper to randomize array selection
+// Helper to randomize array selection (up to 3)
 function getRandomRecipes(arr, count = 3) {
     const shuffled = [...arr].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, count);
 }
 
 let pendingRecipes = [];
-let allPantryItems = [];
+let userTypedIngredients = [];
 
 export function findRecipes(userIngredients) {
-    const cleanedInput = userIngredients.toLowerCase().split(',').map(i => i.trim()).filter(Boolean);
-    if (cleanedInput.length === 0) return [];
+    userTypedIngredients = userIngredients.toLowerCase().split(',').map(i => i.trim()).filter(Boolean);
+    if (userTypedIngredients.length === 0) return [];
 
+    // Match ALL recipes where user typed at least one core ingredient
     const matched = recipeDatabase.filter(recipe => {
-        return recipe.coreIngredients.some(ing => cleanedInput.includes(ing));
+        return recipe.coreIngredients.some(ing => userTypedIngredients.includes(ing));
     });
 
     return getRandomRecipes(matched, 3);
@@ -129,27 +162,112 @@ document.addEventListener('DOMContentLoaded', () => {
         
         resultsContainer.innerHTML = '';
         if (pendingRecipes.length === 0) {
-            resultsContainer.innerHTML = '<p class="no-result">No matching recipes found with those ingredients. Try adding more like tomato, cheese, bread, or potato!</p>';
+            resultsContainer.innerHTML = `
+                <div class="notice-box" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center;">
+                    <p style="color: #d9534f; font-weight: bold; font-size: 1.1rem;">Unfortunately, a proper meal can't be made from this.</p>
+                    <p style="color: #555; margin-top: 8px;">Please include core food items (like chicken, bread, eggs, tomatoes, or potatoes) and try again!</p>
+                </div>
+            `;
             return;
         }
 
-        allPantryItems = [...new Set(pendingRecipes.flatMap(r => r.pantryItems))];
+        const requiredCoreItems = [...new Set(pendingRecipes.flatMap(r => r.coreIngredients))];
+        const missingCoreItems = requiredCoreItems.filter(item => !userTypedIngredients.includes(item));
 
-        const neverAskAgain = localStorage.getItem('pantryApprovedAlways') === 'true';
-
-        if (neverAskAgain || allPantryItems.length === 0) {
-            renderFinalResults(pendingRecipes, allPantryItems, resultsContainer);
+        if (missingCoreItems.length > 0) {
+            showCoreItemsCheck(resultsContainer, missingCoreItems);
         } else {
-            showPantryCheck(resultsContainer);
+            showPantryCheck(resultsContainer, userTypedIngredients);
         }
     });
 });
 
-function showPantryCheck(container) {
+function showCoreItemsCheck(container, missingItems) {
+    container.innerHTML = `
+        <div class="pantry-box" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px;">
+            <h3>Core Items Check</h3>
+            <p>Do you have some core items like <strong>${missingItems.join(', ')}</strong>?</p>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+                <button id="core-opt-1" style="background-color: #28a745; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer;">1. Yes, I have all</button>
+                <button id="core-opt-2" style="background-color: #ffc107; color: #333; border: none; padding: 10px; border-radius: 6px; cursor: pointer;">2. I don't have some</button>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('core-opt-1').addEventListener('click', () => {
+        showPantryCheck(container, [...userTypedIngredients, ...missingItems]);
+    });
+
+    document.getElementById('core-opt-2').addEventListener('click', () => {
+        showCoreSelectionChecklist(container, missingItems);
+    });
+}
+
+function showCoreSelectionChecklist(container, missingItems) {
+    let checklistHtml = `
+        <div class="pantry-box" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px;">
+            <h3>Select the Core Items You Have</h3>
+            <p>Check which of these core items you currently own:</p>
+            <div style="display: flex; flex-direction: column; gap: 8px; margin: 15px 0;">
+    `;
+
+    missingItems.forEach((item) => {
+        checklistHtml += `
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" class="core-checkbox" value="${item}" style="width: 18px; height: 18px;">
+                <span>${item}</span>
+            </label>
+        `;
+    });
+
+    checklistHtml += `
+            </div>
+            <button id="confirm-core-items" style="background-color: #007bff; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%;">Continue</button>
+        </div>
+    `;
+
+    container.innerHTML = checklistHtml;
+
+    document.getElementById('confirm-core-items').addEventListener('click', () => {
+        const checkboxes = container.querySelectorAll('.core-checkbox');
+        const userHasCore = Array.from(checkboxes)
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
+
+        const finalAvailableCores = [...userTypedIngredients, ...userHasCore];
+
+        const validRecipes = pendingRecipes.filter(recipe => {
+            return recipe.coreIngredients.every(core => finalAvailableCores.includes(core));
+        });
+
+        if (validRecipes.length === 0) {
+            container.innerHTML = `
+                <div class="notice-box" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center;">
+                    <p style="color: #d9534f; font-weight: bold; font-size: 1.1rem;">Unfortunately, a proper meal can't be made from this.</p>
+                    <p style="color: #555; margin-top: 8px;">You are missing core ingredients required for these dishes. Please add them or try different items!</p>
+                </div>
+            `;
+            return;
+        }
+
+        pendingRecipes = validRecipes;
+        showPantryCheck(container, finalAvailableCores);
+    });
+}
+
+function showPantryCheck(container, availableCores) {
+    const allPantryItems = [...new Set(pendingRecipes.flatMap(r => r.pantryItems))];
+    const neverAskAgain = localStorage.getItem('pantryApprovedAlways') === 'true';
+
+    if (neverAskAgain || allPantryItems.length === 0) {
+        renderFinalResults(pendingRecipes, allPantryItems, container);
+        return;
+    }
+
     container.innerHTML = `
         <div class="pantry-box" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px;">
             <h3>Pantry & Masala Check</h3>
-            <p>These recipes will use standard basic items: <strong>${allPantryItems.join(', ')}</strong>.</p>
+            <p>These recipes require standard items: <strong>${allPantryItems.join(', ')}</strong>.</p>
             <p>Do you have and approve using these?</p>
             <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
                 <button id="pantry-opt-1" style="background-color: #28a745; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer;">1. Yes, I have them</button>
@@ -164,7 +282,7 @@ function showPantryCheck(container) {
     });
 
     document.getElementById('pantry-opt-2').addEventListener('click', () => {
-        showPantrySelectionChecklist(container);
+        showPantrySelectionChecklist(container, allPantryItems);
     });
 
     document.getElementById('pantry-opt-3').addEventListener('click', () => {
@@ -173,7 +291,7 @@ function showPantryCheck(container) {
     });
 }
 
-function showPantrySelectionChecklist(container) {
+function showPantrySelectionChecklist(container, allPantryItems) {
     let checklistHtml = `
         <div class="pantry-box" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px;">
             <h3>Select the Pantry Items You Have</h3>
@@ -204,16 +322,30 @@ function showPantrySelectionChecklist(container) {
             .filter(cb => cb.checked)
             .map(cb => cb.value);
 
-        renderFinalResults(pendingRecipes, userApprovedItems, container);
+        const validRecipes = pendingRecipes.filter(recipe => {
+            return recipe.pantryItems.every(item => userApprovedItems.includes(item));
+        });
+
+        if (validRecipes.length === 0) {
+            container.innerHTML = `
+                <div class="notice-box" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center;">
+                    <p style="color: #d9534f; font-weight: bold; font-size: 1.1rem;">Unfortunately, a proper meal can't be made with your selected items.</p>
+                    <p style="color: #555; margin-top: 8px;">Please check required pantry staples and try again!</p>
+                </div>
+            `;
+            return;
+        }
+
+        renderFinalResults(validRecipes, userApprovedItems, container);
     });
 }
 
 function renderFinalResults(recipes, pantryUsed, container) {
     let html = `
         <div class="notice-box" style="margin-bottom: 15px; font-style: italic; color: #555;">
-            <p>These recipes will use standard basic items: <strong>${pantryUsed.length > 0 ? pantryUsed.join(', ') : 'None'}</strong>.</p>
+            <p>These recipes will use standard items: <strong>${pantryUsed.length > 0 ? pantryUsed.join(', ') : 'None'}</strong>.</p>
         </div>
-        <h2>Your Recommended Recipes</h2>
+        <h2>Your Recommended Recipes (${recipes.length} available)</h2>
     `;
     
     recipes.forEach((recipe, index) => {
@@ -268,7 +400,7 @@ function renderFinalResults(recipes, pantryUsed, container) {
                 e.target.style.backgroundColor = '#dc3545';
             } else {
                 altBox.style.display = 'none';
-                e.target.textContent = `+ View ${pendingRecipes[idx].altCookingMethod.appliance}`;
+                e.target.textContent = `+ View ${recipes[idx].altCookingMethod.appliance}`;
                 e.target.style.backgroundColor = '#6c757d';
             }
         });

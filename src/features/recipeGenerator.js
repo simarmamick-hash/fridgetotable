@@ -1,5 +1,5 @@
 // src/features/recipeGenerator.js
-// FridgeToTable - 100% Procedural Combinatorial Generator (Zero Hardcoded Names/Templates)
+// FridgeToTable - Autonomous Combinatorial Engine (Fixed Cuisines, Named Quantities, Independent Step Generators)
 
 function sanitizeAndInferInputs(rawUserInput) {
     if (!rawUserInput || typeof rawUserInput !== 'string') {
@@ -10,49 +10,110 @@ function sanitizeAndInferInputs(rawUserInput) {
     return { coreItems: [...new Set(tokens)] };
 }
 
+// Fixed: Explicitly includes the ingredient name in every quantity line
 function getExactQuantity(item) {
-    const cleanItem = item.toLowerCase().trim();
-    if (cleanItem.includes('paneer') || cleanItem.includes('tofu')) return '200g (cubed)';
-    if (cleanItem.includes('curd') || cleanItem.includes('yogurt') || cleanItem.includes('cream')) return '1/2 cup';
-    if (cleanItem.includes('chicken') || cleanItem.includes('meat') || cleanItem.includes('beef')) return '250g portions';
-    if (cleanItem.includes('potato') || cleanItem.includes('veg')) return '2 medium pieces (diced)';
-    if (cleanItem.includes('tomato') || cleanItem.includes('fruit')) return '2 units (chopped)';
-    if (cleanItem.includes('bread') || cleanItem.includes('toast')) return '2 slices';
-    if (cleanItem.includes('cheese')) return '1/2 cup grated';
-    if (cleanItem.includes('egg')) return '2 units';
-    if (cleanItem.includes('rice')) return '1 cup basmati rice';
-    if (cleanItem.includes('pasta') || cleanItem.includes('noodles')) return '150g dry pasta/noodles';
-    if (cleanItem.includes('oil') || cleanItem.includes('butter')) return '1 tbsp';
+    const clean = item.toLowerCase().trim();
+    if (clean.includes('paneer') || clean.includes('tofu')) return `200g ${item} (cubed)`;
+    if (clean.includes('curd') || clean.includes('yogurt') || clean.includes('cream')) return `1/2 cup ${item}`;
+    if (clean.includes('chicken') || clean.includes('meat') || clean.includes('beef')) return `250g ${item} portions`;
+    if (clean.includes('potato') || clean.includes('veg')) return `2 medium ${item} (diced)`;
+    if (clean.includes('tomato') || clean.includes('fruit')) return `2 units ${item} (chopped)`;
+    if (clean.includes('bread') || clean.includes('toast')) return `2 slices ${item}`;
+    if (clean.includes('cheese')) return `1/2 cup grated ${item}`;
+    if (clean.includes('egg')) return `2 units ${item}`;
+    if (clean.includes('rice')) return `1 cup ${item}`;
+    if (clean.includes('pasta') || clean.includes('noodles')) return `150g ${item}`;
+    if (clean.includes('oil') || clean.includes('butter')) return `1 tbsp ${item}`;
     return `1 standard portion of ${item}`;
 }
 
-// Dynamic vocabulary pools to procedurally construct infinite unique titles and steps on the fly
-const GLOBAL_ADJECTIVES = ["Tuscan", "Street-Style", "Bistro", "Dhaba-Style", "Izakaya", "Provencal", "Catalan", "Aegean", "Mughlai", "Hearth-Roasted", "Glazed", "Infused", "Sizzling", "Rustic", "Velvety"];
-const COOKING_VESSELS = ["Skillet", "Wok", "Dutch Oven", "Handi", "Casserole Dish", "Grill Pan", "Saucepan", "Roasting Tray", "Clay Pot", "Warming Plate"];
-const CULINARY_ACTIONS = ["Searing", "Braising", "Glazing", "Simmering", "Tossing", "Roasting", "Emulsifying", "Poaching", "Basting", "Caramelizing"];
+const GLOBAL_CUISINES = [
+    "Italian", "Mexican", "Thai", "Arabian", "French", 
+    "Greek", "Japanese", "North Indian", "Spanish", "Lebanese"
+];
 
-function generateProceduralSteps(coreItems, action, vessel, timeMinutes) {
-    let steps = [];
-    steps.push(`Begin by thoroughly prepping and cleaning your core input items (${coreItems.join(', ')}).`);
-    steps.push(`Heat 1 tbsp of cooking oil, butter, or fat in your ${vessel.toLowerCase()} over medium-high heat until properly warmed.`);
-    steps.push(`Introduce the primary components into the vessel, applying active ${action.toLowerCase()} to develop initial textures and flavors.`);
-    
-    if (timeMinutes > 20) {
-        steps.push(`Incorporate aromatic seasonings, spices, and a small splash of liquid or broth to prevent sticking.`);
-        steps.push(`Cover the ${vessel.toLowerCase()} with a tight-fitting lid and let the mixture process slowly on low heat for ${timeMinutes - 10} minutes.`);
-    } else {
-        steps.push(`Toss and stir continuously for 5-7 minutes over brisk heat, ensuring even thermal distribution.`);
-    }
-    
-    steps.push(`Adjust salt, pepper, or finishing oils to personal taste preferences.`);
-    steps.push(`Plate immediately while piping hot to capture optimal aroma and texture.`);
-    return steps;
+const GLOBAL_ADJECTIVES = ["Tuscan", "Street-Style", "Bistro", "Dhaba-Style", "Izakaya", "Provencal", "Catalan", "Aegean", "Mughlai", "Hearth-Roasted"];
+
+// 1. Slow Braise Instruction Generator (6-8 detailed steps)
+function getBraiseSteps(core) {
+    return [
+        `Pat your core ingredients (${core.join(', ')}) thoroughly dry with kitchen paper to prep for braising.`,
+        `Warm 1 tbsp of olive oil or butter in a heavy-bottomed Dutch oven over medium heat.`,
+        `Add sliced onions and minced garlic, sautéing for 4 minutes until translucent and aromatic.`,
+        `Place the core items into the pot, gently searing them on all sides for 3 minutes to lock in juices.`,
+        `Pour in 1/2 cup of warm water or vegetable broth, scraping up any browned bits stuck to the bottom of the pot.`,
+        `Cover tightly with a heavy lid, reduce heat to the lowest simmer, and braise undisturbed for 20 minutes.`,
+        `Remove the lid, check seasoning with sea salt and cracked pepper, and let simmer for 3 minutes to thicken the braising juices.`
+    ];
 }
+
+// 2. Wok Toss Instruction Generator (6-7 detailed steps)
+function getWokSteps(core) {
+    return [
+        `Slice all core components (${core.join(', ')}) into thin, uniform strips or bite-sized pieces for high-heat cooking.`,
+        `In a small bowl, whisk together 1 tbsp soy sauce, a splash of water, and minced garlic to create a quick stir-fry glaze.`,
+        `Place a wok or deep skillet over maximum heat until wisps of smoke begin rising from the surface.`,
+        `Add 1 tbsp of cooking oil, swirling rapidly to coat the inner walls of the wok.`,
+        `Throw in your primary core items first, flash-frying vigorously for 3-4 minutes while tossing constantly.`,
+        `Pour the prepared sauce directly down the hot sides of the wok, letting it sizzle and caramelize instantly.`,
+        `Toss everything together on high heat for 2 minutes until glossy and coated, then plate immediately.`
+    ];
+}
+
+// 3. Cast-Iron Skillet Sear Instruction Generator (7-8 detailed steps)
+function getSkilletSteps(core) {
+    return [
+        `Dice or portion all core ingredients (${core.join(', ')}) into clean, synchronized cooking sizes.`,
+        `Place a heavy cast-iron skillet over high heat and allow it to heat dry for 2 full minutes until screaming hot.`,
+        `Melt 1 tbsp of butter or high-smoke oil directly in the center of the skillet.`,
+        `Arrange your core ingredients in a single layer, ensuring they have enough space to sear rather than steam.`,
+        `Leave undisturbed for 4-5 minutes to build a deeply savory, caramelized crust on the bottom surface.`,
+        `Season vigorously with smoked paprika, salt, and black pepper, then flip each piece carefully.`,
+        `Squeeze fresh lime or lemon juice over the sizzling pan to deglaze and lift all the rich flavors.`
+    ];
+}
+
+// 4. Creamy Emulsion Pan-Bake Instruction Generator (6-7 detailed steps)
+function getBakeSteps(core) {
+    return [
+        `Pre-boil or tenderize your base ingredients (${core.join(', ')}) lightly in salted water for 5 minutes; drain well.`,
+        `Melt 1 tbsp of butter in a wide skillet over medium flame and sauté minced garlic until golden.`,
+        `Incorporate your core components into the skillet, tossing gently for 3 minutes.`,
+        `Reduce heat to low and pour in dairy components (like curd, cream, or cheese) along with 2 tbsp of warm water.`,
+        `Stir continuously over low heat until the sauce melts and unifies into a rich, velvety emulsion coating.`,
+        `Transfer the creamy mixture into an oven-safe baking dish, topping heavily with grated cheese.`,
+        `Bake in a preheated oven at 190°C for 10-12 minutes until bubbling, golden-brown, and aromatic.`
+    ];
+}
+
+// 5. Hearth Confit & Roast Instruction Generator (6 steps)
+function getRoastSteps(core) {
+    return [
+        `Submerge your core items (${core.join(', ')}) in a small roasting dish with 2 tbsp of olive oil and garlic cloves.`,
+        `Toss thoroughly with your hands so every piece is coated in the oil and aromatics.`,
+        `Place the roasting dish into a preheated oven or toaster oven set to 180°C.`,
+        `Roast slowly for 22 minutes, basting with pan juices halfway through to keep the ingredients exceptionally tender.`,
+        `Turn the oven setting to broil for the final 2 minutes to crisp the exterior surfaces to a golden finish.`,
+        `Remove carefully, let rest for 3 minutes, and serve warm with pan drippings.`
+    ];
+}
+
+const TECHNIQUE_FACTORIES = [
+    { name: "Slow-Braised Infusion Stew", time: "30 mins", pantry: ["olive oil", "garlic cloves", "bay leaves", "onion", "sea salt", "black pepper"], getSteps: getBraiseSteps },
+    { name: "High-Heat Wok Toss & Glaze", time: "15 mins", pantry: ["sesame oil", "soy sauce", "fresh ginger", "garlic cloves", "green chilies", "cooking oil", "salt"], getSteps: getWokSteps },
+    { name: "Cast-Iron Skillet Sear & Crust", time: "20 mins", pantry: ["butter", "smoked paprika", "ground cumin", "lime juice", "garlic", "salt", "black pepper"], getSteps: getSkilletSteps },
+    { name: "Creamy Emulsion Pan-Bake", time: "25 mins", pantry: ["extra virgin olive oil", "garlic", "parmesan cheese", "fresh herbs", "cream or yogurt", "salt"], getSteps: getBakeSteps },
+    { name: "Rustic Hearth Confit & Roast", time: "28 mins", pantry: ["butter", "olive oil", "garlic cloves", "dried herbs", "sea salt", "black pepper"], getSteps: getRoastSteps }
+];
 
 function generateAutonomousGlobalRecipes(coreItems) {
     let recipes = [];
-    
+    let shuffledCuisines = [...GLOBAL_CUISINES].sort(() => Math.random() - 0.5);
+
     for (let i = 0; i < 10; i++) {
+        let cuisineName = shuffledCuisines[i % shuffledCuisines.length]; // Fixed: Real cuisine name
+        let technique = TECHNIQUE_FACTORIES[i % TECHNIQUE_FACTORIES.length];
+        
         let primary = coreItems[i % coreItems.length] || 'Main Ingredient';
         let secondary = coreItems[(i + 1) % coreItems.length] || primary;
         
@@ -60,30 +121,24 @@ function generateAutonomousGlobalRecipes(coreItems) {
         let fmtSecondary = secondary.charAt(0).toUpperCase() + secondary.slice(1);
         
         let adj = GLOBAL_ADJECTIVES[Math.floor(Math.random() * GLOBAL_ADJECTIVES.length)];
-        let vessel = COOKING_VESSELS[Math.floor(Math.random() * COOKING_VESSELS.length)];
-        let action = CULINARY_ACTIONS[Math.floor(Math.random() * CULINARY_ACTIONS.length)];
-        let timeMinutes = 12 + (i * 3);
-
-        let title = `${adj} ${fmtPrimary} & ${fmtSecondary} ${vessel} (${action})`;
+        let title = `${adj} ${fmtPrimary} & ${fmtSecondary} (${technique.name})`;
+        
         let subsetSize = (i % 2 === 0) ? coreItems.length : Math.max(1, coreItems.length - 1);
         let currentSubset = coreItems.slice(0, subsetSize);
 
-        let dynamicPantry = ["cooking oil or butter", "garlic cloves", "sea salt", "black pepper", "onion"];
-
         recipes.push({
             title: title,
-            cuisine: adj,
-            totalTime: `${timeMinutes} mins`,
+            cuisine: cuisineName, // Fixed: Displays true cuisine like Italian, Mexican, etc.
+            totalTime: technique.time,
             coreIngredients: currentSubset,
-            pantryItems: dynamicPantry,
+            pantryItems: technique.pantry,
             ingredients: [
                 ...currentSubset.map((item, idx) => `${idx + 1}. ${getExactQuantity(item)}`),
-                "1 tbsp cooking oil or butter",
-                "Pinch of sea salt and black pepper"
+                ...technique.pantry.slice(0, 3).map(p => `1 tbsp ${p}`)
             ],
-            instructions: generateProceduralSteps(currentSubset, action, vessel, timeMinutes),
+            instructions: technique.getSteps(currentSubset), // Fixed: Completely independent instructions per technique!
             altCookingMethod: {
-                appliance: "Convection Oven / Microwave Alternative",
+                appliance: "Alternative Convection / Microwave Method",
                 instructions: [
                     `Transfer prepared ingredients into an oven-safe baking dish or microwave bowl.`,
                     `Bake at 190°C or heat on medium-high power for 12-15 minutes until thoroughly cooked.`

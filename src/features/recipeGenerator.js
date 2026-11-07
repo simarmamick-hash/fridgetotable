@@ -1,5 +1,5 @@
 // src/features/recipeGenerator.js
-// FridgeToTable - Code S (Autonomous Combinatorial Engine with Unique Alternative Methods)
+// FridgeToTable - Codex (Updated Quantity Fallback to 100g standard)
 
 function sanitizeAndInferInputs(rawUserInput) {
     if (!rawUserInput || typeof rawUserInput !== 'string') {
@@ -23,7 +23,7 @@ function getExactQuantity(item) {
     if (clean.includes('rice')) return `1 cup ${item}`;
     if (clean.includes('pasta') || clean.includes('noodles')) return `150g ${item}`;
     if (clean.includes('oil') || clean.includes('butter')) return `1 tbsp ${item}`;
-    return `1 standard portion of ${item}`;
+    return `100g ${item}`; // Reverted back to the clean standard format
 }
 
 const GLOBAL_CUISINES = [
@@ -187,7 +187,7 @@ function generateAutonomousGlobalRecipes(coreItems) {
             ],
             instructions: technique.getSteps(currentSubset),
             altCookingMethod: {
-                appliance: technique.appliance, // Fixed: Now uniquely tailored to each cooking technique!
+                appliance: technique.appliance,
                 instructions: technique.altSteps
             }
         });

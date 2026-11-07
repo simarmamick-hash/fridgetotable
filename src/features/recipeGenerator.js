@@ -1,7 +1,8 @@
-// Expanded recipe database ensuring up to 10 diverse recipes can be generated
+// Expanded static recipe database with regional and international cuisines
 const recipeDatabase = [
     {
         title: "Aloo Tomato Quick Curry",
+        cuisine: "Indian Regional",
         coreIngredients: ["potato", "tomato"],
         pantryItems: ["oil", "salt", "turmeric", "cumin"],
         ingredients: ["1. 2 medium potatoes (boiled & cubed)", "2. 2 ripe tomatoes (chopped)", "1 tbsp cooking oil", "1/2 tsp cumin seeds", "1/4 tsp turmeric powder", "Salt to taste"],
@@ -23,6 +24,7 @@ const recipeDatabase = [
     },
     {
         title: "Cheesy Garlic Bread Slice",
+        cuisine: "Continental",
         coreIngredients: ["bread", "cheese"],
         pantryItems: ["butter", "garlic", "oregano"],
         ingredients: ["1. 2 slices of bread", "2. 1/2 cup grated cheese", "1 tbsp butter", "2 cloves minced garlic", "A pinch of dried oregano"],
@@ -40,91 +42,6 @@ const recipeDatabase = [
                 "Bake at 180°C for 5-7 minutes until the edges are crisp and the cheese is melted, golden, and bubbling."
             ]
         }
-    },
-    {
-        title: "Tomato Cheese Omelette",
-        coreIngredients: ["egg", "tomato", "cheese"],
-        pantryItems: ["oil", "salt", "black pepper"],
-        ingredients: ["1. 2 eggs", "2. 1 small tomato (diced)", "3. 2 tbsp cheese (grated)", "1 tsp oil or butter", "Salt and pepper to taste"],
-        instructions: [
-            "Whisk the eggs in a bowl thoroughly with salt and black pepper.",
-            "Heat 1 tsp oil in a pan on medium flame for 30 seconds, then pour in the egg mixture.",
-            "Cook on medium flame for 2 minutes until the edges begin to set.",
-            "Scatter the diced tomatoes and grated cheese on one half, fold over, cook on low flame (sim) for 1 more minute, and serve."
-        ],
-        altCookingMethod: null
-    },
-    {
-        title: "Spicy Masala Bread Toast",
-        coreIngredients: ["bread", "tomato"],
-        pantryItems: ["onion", "oil", "green chilli", "turmeric"],
-        ingredients: ["1. 2 slices of bread", "2. 1 tomato (finely chopped)", "1 small onion (chopped)", "1 green chilli (minced)", "1 tbsp oil", "Pinch of salt and turmeric"],
-        instructions: [
-            "Heat 1 tbsp oil in a pan on medium flame, then sauté chopped onions and green chillies for 2 minutes until translucent.",
-            "Add chopped tomatoes, turmeric, and salt. Cook on medium flame for 3-4 minutes down into a thick paste.",
-            "Spread this spicy tomato mixture evenly over your bread slices.",
-            "Place the slices back on the pan on low-to-medium flame for 2-3 minutes until the bottom crust is crisp and golden brown."
-        ],
-        altCookingMethod: {
-            appliance: "OTG / Oven Method",
-            instructions: [
-                "Prepare the onion-tomato masala paste in a pan as usual.",
-                "Spread the masala evenly over the bread slices and top with a tiny dash of oil or butter.",
-                "Place them in a preheated OTG at 190°C for 5-6 minutes until toasted crisp and golden."
-            ]
-        }
-    },
-    {
-        title: "Tomato Cheese Skillet Melt",
-        coreIngredients: ["tomato", "cheese"],
-        pantryItems: ["butter", "garlic", "black pepper"],
-        ingredients: ["1. 2 ripe tomatoes (sliced thick)", "2. 1/2 cup grated cheese", "1 tbsp butter", "1 clove minced garlic", "Crushed black pepper to taste"],
-        instructions: [
-            "Melt butter in a pan on medium flame and sauté minced garlic for 30 seconds.",
-            "Place thick tomato slices flat on the pan and sear for 2 minutes.",
-            "Cover generously with grated cheese and black pepper.",
-            "Cover with a lid, turn flame to low (sim), and cook for 3 minutes until the cheese is melted and bubbly."
-        ],
-        altCookingMethod: {
-            appliance: "OTG / Oven Method",
-            instructions: [
-                "Arrange thick tomato slices on a baking tray, top with garlic butter, cheese, and pepper.",
-                "Bake in an OTG preheated to 180°C for 6-8 minutes until bubbly and golden."
-            ]
-        }
-    },
-    {
-        title: "Healthy Chicken & Lettuce Salad Bowl",
-        coreIngredients: ["chicken", "lettuce"],
-        pantryItems: ["olive oil", "lemon juice", "salt", "black pepper"],
-        ingredients: ["1. 150g chicken breast (cubed)", "2. 2 cups fresh lettuce leaves (washed & chopped)", "1 tbsp olive oil", "1 tsp lemon juice", "Salt and crushed black pepper to taste"],
-        instructions: [
-            "Heat olive oil in a pan on medium flame, add chicken cubes, salt, and pepper.",
-            "Sauté on medium flame for 6-8 minutes until fully cooked, golden, and tender.",
-            "In a large bowl, toss the fresh chopped lettuce with lemon juice.",
-            "Top the bed of crunchy lettuce with your warm, seasoned chicken chunks and serve fresh."
-        ],
-        altCookingMethod: {
-            appliance: "OTG / Oven Method",
-            instructions: [
-                "Marinate chicken cubes with olive oil, salt, and pepper.",
-                "Place on a baking tray and bake in an OTG preheated to 190°C for 12-15 minutes until juicy and cooked through.",
-                "Serve warm over fresh lettuce leaves."
-            ]
-        }
-    },
-    {
-        title: "Chicken & Potato Homestyle Curry",
-        coreIngredients: ["chicken", "potato", "tomato"],
-        pantryItems: ["oil", "onion", "garlic", "turmeric", "salt"],
-        ingredients: ["1. 200g chicken pieces", "2. 2 medium potatoes (peeled & halved)", "3. 1 tomato (chopped)", "1 onion (chopped)", "1 tbsp oil", "1 tsp garlic paste", "1/2 tsp turmeric and salt to taste"],
-        instructions: [
-            "Heat oil in a pan on medium flame, sauté chopped onions and garlic paste for 2-3 minutes until golden.",
-            "Add chopped tomatoes and turmeric, cooking on medium flame for 3 minutes until soft.",
-            "Toss in the chicken pieces and potato halves, searing them in the masala for 4 minutes.",
-            "Add 1 cup water, cover with a lid, turn flame to low (sim), and simmer for 15-18 minutes until chicken and potatoes are tender."
-        ],
-        altCookingMethod: null
     }
 ];
 
@@ -163,45 +80,55 @@ function sanitizeAndInferInputs(rawUserInput) {
     };
 }
 
-// Precise culinary quantity mapper so ingredients never say "Standard portion of..."
-function getExactQuantity(ingredient) {
-    const ing = ingredient.toLowerCase().trim();
-    if (ing.includes('paneer')) return '200g paneer (cubed)';
-    if (ing.includes('curd') || ing.includes('yogurt')) return '1/2 cup curd (whisked smooth)';
-    if (ing.includes('turmeric')) return '1/4 tsp turmeric powder';
-    if (ing.includes('chicken')) return '200g chicken pieces';
-    if (ing.includes('potato')) return '2 medium potatoes (diced)';
-    if (ing.includes('tomato')) return '2 ripe tomatoes (chopped)';
-    if (ing.includes('bread')) return '2 slices of bread';
-    if (ing.includes('cheese')) return '1/2 cup grated cheese';
-    if (ing.includes('egg')) return '2 whole eggs';
-    if (ing.includes('noodles')) return '150g noodles (boiled)';
-    if (ing.includes('rice')) return '1 cup basmati rice';
-    if (ing.includes('onion')) return '1 medium onion (finely chopped)';
-    if (ing.includes('garlic')) return '3 cloves garlic (minced)';
-    if (ing.includes('oil') || ing.includes('butter')) return '1 tbsp cooking oil or butter';
-    if (ing.includes('salt')) return 'Salt to taste';
-    return `1 portion of ${ingredient}`;
+// Exact culinary quantity lookup dictionary (Zero placeholders!)
+function getExactQuantity(item) {
+    const cleanItem = item.toLowerCase().trim();
+    if (cleanItem.includes('paneer')) return '200g paneer (cubed)';
+    if (cleanItem.includes('curd') || cleanItem.includes('yogurt')) return '1/2 cup curd (whisked smooth)';
+    if (cleanItem.includes('turmeric')) return '1/4 tsp turmeric powder';
+    if (cleanItem.includes('chicken')) return '200g chicken pieces';
+    if (cleanItem.includes('potato')) return '2 medium potatoes (diced)';
+    if (cleanItem.includes('tomato')) return '2 ripe tomatoes (chopped)';
+    if (cleanItem.includes('bread')) return '2 slices of bread';
+    if (cleanItem.includes('cheese')) return '1/2 cup grated cheese';
+    if (cleanItem.includes('egg')) return '2 whole eggs';
+    if (cleanItem.includes('noodles')) return '150g noodles (boiled)';
+    if (cleanItem.includes('rice')) return '1 cup basmati rice';
+    if (cleanItem.includes('beef')) return '200g beef strips';
+    if (cleanItem.includes('lettuce')) return '2 cups fresh lettuce';
+    if (cleanItem.includes('onion')) return '1 medium onion (finely chopped)';
+    if (cleanItem.includes('garlic')) return '3 cloves garlic (minced)';
+    if (cleanItem.includes('oil') || cleanItem.includes('butter')) return '1 tbsp cooking oil or butter';
+    if (cleanItem.includes('salt')) return 'Salt to taste';
+    if (cleanItem.includes('cumin')) return '1/2 tsp cumin seeds';
+    return `100g ${item}`;
 }
 
-// Generates up to 10 distinct dynamic recipes using flexible subsets and precise quantities
+// Generates up to 10 distinct dynamic recipes across Indian, Chinese, and Continental cuisines
 function generateTenDynamicRecipes(coreItems, inferredStaples) {
-    const styles = [
-        "Skillet Sauté", "Homestyle Simmer", "Pan Toss & Roast", "Creamy Masala Gravy", 
-        "Pepper Fry Style", "Tandoori Spice Bake", "Dhaba Style Masakali", "Butter Garlic Roast", 
-        "Quick Comfort Stew", "Classic Fusion Casserole"
+    const cuisineStyles = [
+        { name: "North Indian Dhaba Style Gravy", cuisine: "North Indian" },
+        { name: "Indo-Chinese Garlic Wok Stir-Fry", cuisine: "Chinese Fusion" },
+        { name: "Continental Creamy Skillet Bake", cuisine: "Continental" },
+        { name: "Royal Mughlai White Korma", cuisine: "Mughlai Indian" },
+        { name: "South Indian Pepper Fry", cuisine: "South Indian" },
+        { name: "Tandoori Spice Roasted Casserole", cuisine: "Indo-Continental" },
+        { name: "Classic Home-Style Simmer", cuisine: "Indian Comfort" },
+        { name: "Street-Style Spicy Toss", cuisine: "Fast Fusion" },
+        { name: "Herb & Butter Skillet Roast", cuisine: "Continental Fusion" },
+        { name: "Traditional Regional Handi", cuisine: "Traditional Indian" }
     ];
 
-    return styles.map((style, index) => {
-        // Create flexible subsets: rotate through subsets of core items (e.g., all items, or subsets of 1-2 items)
-        let subsetSize = (index % 2 === 0) ? coreItems.length : Math.max(1, coreItems.length - 1);
+    return cuisineStyles.map((styleObj, index) => {
+        let subsetSize = (index % 3 === 0) ? coreItems.length : Math.max(1, (index % coreItems.length) + 1);
         let currentSubset = coreItems.slice(0, subsetSize);
-        
-        const primaryCore = currentSubset[0] || coreItems[0] || 'Item';
+
+        const primaryCore = currentSubset[0] || coreItems[0] || 'Special';
         const formattedCoreName = primaryCore.charAt(0).toUpperCase() + primaryCore.slice(1);
 
         return {
-            title: `${formattedCoreName} & ${style}`,
+            title: `${formattedCoreName} ${styleObj.name}`,
+            cuisine: styleObj.cuisine,
             coreIngredients: currentSubset,
             pantryItems: inferredStaples.slice(0, 4),
             ingredients: [
@@ -209,16 +136,16 @@ function generateTenDynamicRecipes(coreItems, inferredStaples) {
                 ...(inferredStaples.length > 0 ? inferredStaples.slice(0, 3).map(staple => getExactQuantity(staple)) : ["1 tbsp cooking oil", "Salt to taste"])
             ],
             instructions: [
-                `Prep and clean your selected core ingredients (${currentSubset.join(', ')}).`,
-                `Heat 1 tbsp of oil or butter in a pan on medium flame for 1 minute.`,
-                `Add aromatics and spices (${inferredStaples.slice(0, 3).join(', ') || 'salt and pepper'}), sautéing for 2 minutes until fragrant.`,
-                `Toss in your core items and cook on medium-high flame for 5-7 minutes until tender, well-coated, and delicious.`
+                `Prep and measure your core subset ingredients (${currentSubset.join(', ')}).`,
+                `Heat 1 tbsp of cooking oil or butter in a pan or wok on medium flame for 1 minute.`,
+                `Sauté your aromatics and spices (${inferredStaples.slice(0, 2).join(', ') || 'garlic and cumin'}) until fragrant.`,
+                `Toss in your core ingredients and cook on medium-high flame or simmer on low for 6-8 minutes until tender and flavorful.`
             ],
             altCookingMethod: {
-                appliance: "OTG / Microwave Method",
+                appliance: "OTG / Microwave Convection Method",
                 instructions: [
-                    "Combine your ingredients and seasoning in a microwave-safe or oven-safe dish.",
-                    "Cover lightly and cook on high power or bake at 180°C for 8-10 minutes until done."
+                    "Combine the prepared ingredients and spices in a greased baking or microwave-safe dish.",
+                    "Bake in your preheated OTG at 190°C or microwave on high power for 8-10 minutes until bubbling and fully cooked."
                 ]
             }
         };
@@ -331,152 +258,5 @@ function showCoreSelectionChecklist(container, suggestions) {
         const finalAvailableCores = [...userTypedIngredients, ...userHasCore];
         pendingRecipes = findRecipes(finalAvailableCores.join(', '));
         showPantryCheck(container, finalAvailableCores);
-    });
-}
-
-function showPantryCheck(container, availableCores) {
-    const allPantryItems = [...new Set([...pendingRecipes.flatMap(r => r.pantryItems), ...inferredPantryStaples])];
-    const neverAskAgain = localStorage.getItem('pantryApprovedAlways') === 'true';
-
-    if (neverAskAgain || allPantryItems.length === 0) {
-        renderFinalResults(pendingRecipes, allPantryItems, container);
-        return;
-    }
-
-    container.innerHTML = `
-        <div class="pantry-box" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px;">
-            <h3>Pantry & Masala Check</h3>
-            <p>These recipes require standard items: <strong>${allPantryItems.join(', ')}</strong>.</p>
-            <p>Do you have and approve using these?</p>
-            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
-                <button id="pantry-opt-1" style="background-color: #28a745; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer;">1. Yes, I have them</button>
-                <button id="pantry-opt-2" style="background-color: #ffc107; color: #333; border: none; padding: 10px; border-radius: 6px; cursor: pointer;">2. No, I don't have some of these</button>
-                <button id="pantry-opt-3" style="background-color: #007bff; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer;">3. Yes, I have them and never ask me again</button>
-            </div>
-        </div>
-    `;
-
-    document.getElementById('pantry-opt-1').addEventListener('click', () => {
-        renderFinalResults(pendingRecipes, allPantryItems, container);
-    });
-
-    document.getElementById('pantry-opt-2').addEventListener('click', () => {
-        showPantrySelectionChecklist(container, allPantryItems);
-    });
-
-    document.getElementById('pantry-opt-3').addEventListener('click', () => {
-        localStorage.setItem('pantryApprovedAlways', 'true');
-        renderFinalResults(pendingRecipes, allPantryItems, container);
-    });
-}
-
-function showPantrySelectionChecklist(container, allPantryItems) {
-    let checklistHtml = `
-        <div class="pantry-box" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px;">
-            <h3>Select the Pantry Items You Have</h3>
-            <p>Check the items you currently own from the list below:</p>
-            <div style="display: flex; flex-direction: column; gap: 8px; margin: 15px 0;">
-    `;
-
-    allPantryItems.forEach((item) => {
-        checklistHtml += `
-            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                <input type="checkbox" class="pantry-checkbox" value="${item}" checked style="width: 18px; height: 18px;">
-                <span>${item}</span>
-            </label>
-        `;
-    });
-
-    checklistHtml += `
-            </div>
-            <button id="confirm-custom-pantry" style="background-color: #ff6b6b; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%;">Continue with Selected Items</button>
-        </div>
-    `;
-
-    container.innerHTML = checklistHtml;
-
-    document.getElementById('confirm-custom-pantry').addEventListener('click', () => {
-        const checkboxes = container.querySelectorAll('.pantry-checkbox');
-        const userApprovedItems = Array.from(checkboxes)
-            .filter(cb => cb.checked)
-            .map(cb => cb.value);
-
-        renderFinalResults(pendingRecipes, userApprovedItems, container);
-    });
-}
-
-function renderFinalResults(recipes, pantryUsed, container) {
-    let html = `
-        <div class="notice-box" style="margin-bottom: 15px; font-style: italic; color: #555;">
-            <p>These recipes will use standard items: <strong>${pantryUsed.length > 0 ? pantryUsed.join(', ') : 'None'}</strong>.</p>
-        </div>
-        <h2>Your Recommended Recipes (${recipes.length} available)</h2>
-    `;
-    
-    recipes.forEach((recipe, index) => {
-        const coreUsedList = recipe.coreIngredients.map((core, idx) => `<li>${idx + 1}. ${core}</li>`).join('');
-
-        html += `
-            <div class="recipe-card" style="background: white; padding: 16px; border-radius: 8px; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
-                <h3>${recipe.title}</h3>
-                
-                <div class="recipe-section" style="margin-top: 10px;">
-                    <strong>Ingredients Breakdown:</strong>
-                    <div style="margin-top: 5px; margin-left: 10px;">
-                        <p style="margin: 4px 0; font-weight: bold; font-size: 0.9rem; color: #333;">Core Ingredients Used:</p>
-                        <ul style="margin-left: 20px; margin-bottom: 6px;">
-                            ${coreUsedList}
-                        </ul>
-                        <p style="margin: 4px 0; font-size: 0.9rem; color: #555;"><strong>Full Recipe Quantities:</strong></p>
-                        <ul style="margin-left: 20px; margin-top: 2px;">
-                            ${recipe.ingredients.map(ing => `<li>${ing}</li>`).join('')}
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="recipe-section" style="margin-top: 10px;">
-                    <strong>Original Method (Pan / Gas):</strong>
-                    <ol style="margin-left: 20px; margin-top: 5px;">
-                        ${recipe.instructions.map(step => `<li style="margin-bottom: 4px;">${step}</li>`).join('')}
-                    </ol>
-                </div>
-        `;
-
-        if (recipe.altCookingMethod) {
-            html += `
-                <div class="alt-appliance-section" style="margin-top: 15px; border-top: 1px dashed #e0e0e0; padding-top: 10px;">
-                    <p style="font-size: 0.9rem; color: #444; margin-bottom: 8px;">Want to cook this using an alternative appliance instead of gas/pan?</p>
-                    <button class="toggle-alt-btn" data-index="${index}" style="background-color: #6c757d; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: bold;">
-                        + View ${recipe.altCookingMethod.appliance}
-                    </button>
-                    <div id="alt-box-${index}" style="display: none; margin-top: 12px; background: #fdfdfd; padding: 10px; border-left: 3px solid #007bff; border-radius: 4px;">
-                        <strong style="color: #007bff;">${recipe.altCookingMethod.appliance}:</strong>
-                        <ol style="margin-left: 20px; margin-top: 5px;">
-                            ${recipe.altCookingMethod.instructions.map(step => `<li style="margin-bottom: 4px;">${step}</li>`).join('')}
-                        </ol>
-                    </div>
-                </div>
-            `;
-        }
-
-        html += `</div>`;
-    });
-    
-    container.innerHTML = html;
-
-    container.querySelectorAll('.toggle-alt-btn').forEach(button => {
-        button.addEventListener('click', (e) => {
-            const idx = e.target.getAttribute('data-index');
-            const altBox = document.getElementById(`alt-box-${idx}`);
-            if (altBox.style.display === 'none') {
-                altBox.style.display = 'block';
-                e.target.textContent = `- Hide Alternative Method`;
-                e.target.style.backgroundColor = '#dc3545';
-            } else {
-                altBox.style.display = 'none';
-                e.target.textContent = `+ View ${recipes[idx].altCookingMethod.appliance}`;
-                e.target.style.backgroundColor = '#6c757d';
-            }
-        });
     });
 }

@@ -1,10 +1,11 @@
 // src/features/recipeGenerator.js
-// FridgeToTable - Smart Recipe Generation Engine (10-Recipe Scale, Multi-Cuisine, Precise Quantities)
+// FridgeToTable - Smart Dynamic Recipe Engine (10 Unique Recipes, Contextual Steps, Total Times)
 
 const recipeDatabase = [
     {
         title: "Aloo Tomato Quick Curry",
         cuisine: "Indian Regional",
+        totalTime: "15 mins",
         coreIngredients: ["potato", "tomato"],
         pantryItems: ["oil", "salt", "turmeric", "cumin"],
         ingredients: ["1. 2 medium potatoes (boiled & cubed)", "2. 2 ripe tomatoes (chopped)", "1 tbsp cooking oil", "1/2 tsp cumin seeds", "1/4 tsp turmeric powder", "Salt to taste"],
@@ -27,6 +28,7 @@ const recipeDatabase = [
     {
         title: "Cheesy Garlic Bread Slice",
         cuisine: "Continental",
+        totalTime: "10 mins",
         coreIngredients: ["bread", "cheese"],
         pantryItems: ["butter", "garlic", "oregano"],
         ingredients: ["1. 2 slices of bread", "2. 1/2 cup grated cheese", "1 tbsp butter", "2 cloves minced garlic", "A pinch of dried oregano"],
@@ -82,7 +84,7 @@ function sanitizeAndInferInputs(rawUserInput) {
     };
 }
 
-// Exact culinary quantity lookup dictionary (Zero placeholders!)
+// Exact culinary quantity lookup dictionary
 function getExactQuantity(item) {
     const cleanItem = item.toLowerCase().trim();
     if (cleanItem.includes('paneer')) return '200g paneer (cubed)';
@@ -106,19 +108,19 @@ function getExactQuantity(item) {
     return `100g ${item}`;
 }
 
-// Generates up to 10 distinct dynamic recipes across Indian, Chinese, and Continental cuisines
+// Generates 10 distinct, highly detailed recipes with context-aware steps and unique cooking times
 function generateTenDynamicRecipes(coreItems, inferredStaples) {
     const cuisineStyles = [
-        { name: "North Indian Dhaba Style Gravy", cuisine: "North Indian" },
-        { name: "Indo-Chinese Garlic Wok Stir-Fry", cuisine: "Chinese Fusion" },
-        { name: "Continental Creamy Skillet Bake", cuisine: "Continental" },
-        { name: "Royal Mughlai White Korma", cuisine: "Mughlai Indian" },
-        { name: "South Indian Pepper Fry", cuisine: "South Indian" },
-        { name: "Tandoori Spice Roasted Casserole", cuisine: "Indo-Continental" },
-        { name: "Classic Home-Style Simmer", cuisine: "Indian Comfort" },
-        { name: "Street-Style Spicy Toss", cuisine: "Fast Fusion" },
-        { name: "Herb & Butter Skillet Roast", cuisine: "Continental Fusion" },
-        { name: "Traditional Regional Handi", cuisine: "Traditional Indian" }
+        { name: "North Indian Dhaba Style Gravy", cuisine: "North Indian", time: "18-20 mins" },
+        { name: "Indo-Chinese Garlic Wok Stir-Fry", cuisine: "Chinese Fusion", time: "12-15 mins" },
+        { name: "Continental Creamy Skillet Bake", cuisine: "Continental", time: "20-22 mins" },
+        { name: "Royal Mughlai White Korma", cuisine: "Mughlai Indian", time: "25 mins" },
+        { name: "South Indian Pepper Fry", cuisine: "South Indian", time: "15 mins" },
+        { name: "Tandoori Spice Roasted Casserole", cuisine: "Indo-Continental", time: "22 mins" },
+        { name: "Classic Home-Style Simmer", cuisine: "Indian Comfort", time: "15-18 mins" },
+        { name: "Street-Style Spicy Toss", cuisine: "Fast Fusion", time: "10-12 mins" },
+        { name: "Herb & Butter Skillet Roast", cuisine: "Continental Fusion", time: "15 mins" },
+        { name: "Traditional Regional Handi", cuisine: "Traditional Indian", time: "25-30 mins" }
     ];
 
     return cuisineStyles.map((styleObj, index) => {
@@ -128,25 +130,53 @@ function generateTenDynamicRecipes(coreItems, inferredStaples) {
         const primaryCore = currentSubset[0] || coreItems[0] || 'Special';
         const formattedCoreName = primaryCore.charAt(0).toUpperCase() + primaryCore.slice(1);
 
+        // Build unique, context-aware steps based on ingredients
+        let specificSteps = [];
+        if (currentSubset.some(i => i.includes('curd') || i.includes('yogurt'))) {
+            specificSteps = [
+                `Whisk the curd thoroughly in a bowl until smooth to prevent curdling during cooking.`,
+                `Heat 1 tbsp oil in a pan on medium-low flame, crackle cumin seeds, and add minced garlic or aromatics.`,
+                `Lower the heat completely, pour in the whisked curd along with ${currentSubset.join(', ')}, and stir continuously for 3 minutes.`,
+                `Cover with a lid and simmer on low flame for 6-8 minutes until rich and fragrant.`
+            ];
+        } else if (currentSubset.some(i => i.includes('chicken') || i.includes('beef'))) {
+            specificSteps = [
+                `Clean and pat dry your ${currentSubset.join(' and ')}, seasoning lightly with salt and pepper.`,
+                `Heat 1 tbsp oil in a skillet over medium-high flame and sear the meat until golden brown on all sides (4-5 minutes).`,
+                `Toss in chopped onions, garlic, and spices (${inferredStaples.slice(0, 2).join(', ') || 'turmeric and cumin'}), sautéing until aromatic.`,
+                `Add 1/4 cup water, cover with a lid, reduce heat to low, and simmer for 12-15 minutes until tender and juicy.`
+            ];
+        } else if (currentSubset.some(i => i.includes('bread') || i.includes('cheese'))) {
+            specificSteps = [
+                `Arrange your ${currentSubset.join(' and ')} cleanly on a cutting board or prep station.`,
+                `Melt butter in a pan over low-to-medium flame and lightly toast the bread slices until golden crisp.`,
+                `Layer the ingredients and grated cheese evenly across the top, adding a dash of herbs or pepper.`,
+                `Cover the pan with a lid for 3 minutes on low flame until the cheese is completely melted and bubbly.`
+            ];
+        } else {
+            specificSteps = [
+                `Prepare and chop all core ingredients (${currentSubset.join(', ')}) into uniform bite-sized pieces.`,
+                `Heat 1 tbsp cooking oil in a pan or wok on medium flame and temper with ${inferredStaples[0] || 'cumin seeds'}.`,
+                `Add your primary core items along with spices (${inferredStaples.slice(1, 3).join(', ') || 'salt and turmeric'}), sautéing briskly for 4 minutes.`,
+                `Cover with a lid, turn flame to low, and let simmer or steam for 6-8 minutes until perfectly tender.`
+            ];
+        }
+
         return {
             title: `${formattedCoreName} ${styleObj.name}`,
             cuisine: styleObj.cuisine,
+            totalTime: styleObj.time,
             coreIngredients: currentSubset,
             pantryItems: inferredStaples.slice(0, 4),
             ingredients: [
                 ...currentSubset.map((item, idx) => `${idx + 1}. ${getExactQuantity(item)}`),
                 ...(inferredStaples.length > 0 ? inferredStaples.slice(0, 3).map(staple => getExactQuantity(staple)) : ["1 tbsp cooking oil", "Salt to taste"])
             ],
-            instructions: [
-                `Prep and measure your core subset ingredients (${currentSubset.join(', ')}).`,
-                `Heat 1 tbsp of cooking oil or butter in a pan or wok on medium flame for 1 minute.`,
-                `Sauté your aromatics and spices (${inferredStaples.slice(0, 2).join(', ') || 'garlic and cumin'}) until fragrant.`,
-                `Toss in your core ingredients and cook on medium-high flame or simmer on low for 6-8 minutes until tender and flavorful.`
-            ],
+            instructions: specificSteps,
             altCookingMethod: {
                 appliance: "OTG / Microwave Convection Method",
                 instructions: [
-                    "Combine the prepared ingredients and spices in a greased baking or microwave-safe dish.",
+                    "Combine the prepared ingredients and seasoning in a greased baking or microwave-safe dish.",
                     "Bake in your preheated OTG at 190°C or microwave on high power for 8-10 minutes until bubbling and fully cooked."
                 ]
             }
@@ -361,9 +391,12 @@ function renderFinalResults(recipes, pantryUsed, container) {
 
         html += `
             <div class="recipe-card" style="background: white; padding: 16px; border-radius: 8px; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
                     <h3 style="margin: 0;">${recipe.title}</h3>
-                    <span style="background: #e9ecef; color: #495057; font-size: 0.75rem; font-weight: bold; padding: 4px 8px; border-radius: 12px; text-transform: uppercase;">${recipe.cuisine || 'Fusion'}</span>
+                    <div style="display: flex; gap: 6px;">
+                        <span style="background: #e9ecef; color: #495057; font-size: 0.75rem; font-weight: bold; padding: 4px 8px; border-radius: 12px; text-transform: uppercase;">${recipe.cuisine || 'Fusion'}</span>
+                        <span style="background: #d4edda; color: #155724; font-size: 0.75rem; font-weight: bold; padding: 4px 8px; border-radius: 12px;">⏱️ ${recipe.totalTime || '15 mins'}</span>
+                    </div>
                 </div>
                 
                 <div class="recipe-section" style="margin-top: 10px;">

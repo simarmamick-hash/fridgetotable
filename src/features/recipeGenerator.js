@@ -4,7 +4,7 @@ const recipeDatabase = [
         title: "Aloo Tomato Quick Curry",
         coreIngredients: ["potato", "tomato"],
         pantryItems: ["oil", "salt", "turmeric", "cumin"],
-        ingredients: ["2 medium potatoes (boiled & cubed)", "2 ripe tomatoes (chopped)", "1 tbsp cooking oil", "1/2 tsp cumin seeds", "1/4 tsp turmeric powder", "Salt to taste"],
+        ingredients: ["1. 2 medium potatoes (boiled & cubed)", "2. 2 ripe tomatoes (chopped)", "1 tbsp cooking oil", "1/2 tsp cumin seeds", "1/4 tsp turmeric powder", "Salt to taste"],
         instructions: [
             "Heat 1 tbsp oil in a pan on medium flame for 1 minute, then crackle the cumin seeds.",
             "Add chopped tomatoes, turmeric, and salt. Sauté on medium flame for 3-4 minutes until soft and pulpy.",
@@ -25,7 +25,7 @@ const recipeDatabase = [
         title: "Cheesy Garlic Bread Slice",
         coreIngredients: ["bread", "cheese"],
         pantryItems: ["butter", "garlic", "oregano"],
-        ingredients: ["2 slices of bread", "1/2 cup grated cheese", "1 tbsp butter", "2 cloves minced garlic", "A pinch of dried oregano"],
+        ingredients: ["1. 2 slices of bread", "2. 1/2 cup grated cheese", "1 tbsp butter", "2 cloves minced garlic", "A pinch of dried oregano"],
         instructions: [
             "Mix the softened butter with minced garlic in a small bowl.",
             "Spread the garlic butter evenly across one side of each bread slice.",
@@ -45,7 +45,7 @@ const recipeDatabase = [
         title: "Tomato Cheese Omelette",
         coreIngredients: ["egg", "tomato", "cheese"],
         pantryItems: ["oil", "salt", "black pepper"],
-        ingredients: ["2 eggs", "1 small tomato (diced)", "2 tbsp cheese (grated)", "1 tsp oil or butter", "Salt and pepper to taste"],
+        ingredients: ["1. 2 eggs", "2. 1 small tomato (diced)", "3. 2 tbsp cheese (grated)", "1 tsp oil or butter", "Salt and pepper to taste"],
         instructions: [
             "Whisk the eggs in a bowl thoroughly with salt and black pepper.",
             "Heat 1 tsp oil in a pan on medium flame for 30 seconds, then pour in the egg mixture.",
@@ -58,7 +58,7 @@ const recipeDatabase = [
         title: "Spicy Masala Bread Toast",
         coreIngredients: ["bread", "tomato"],
         pantryItems: ["onion", "oil", "green chilli", "turmeric"],
-        ingredients: ["2 slices of bread", "1 tomato (finely chopped)", "1 small onion (chopped)", "1 green chilli (minced)", "1 tbsp oil", "Pinch of salt and turmeric"],
+        ingredients: ["1. 2 slices of bread", "2. 1 tomato (finely chopped)", "1 small onion (chopped)", "1 green chilli (minced)", "1 tbsp oil", "Pinch of salt and turmeric"],
         instructions: [
             "Heat 1 tbsp oil in a pan on medium flame, then sauté chopped onions and green chillies for 2 minutes until translucent.",
             "Add chopped tomatoes, turmeric, and salt. Cook on medium flame for 3-4 minutes down into a thick paste.",
@@ -78,7 +78,7 @@ const recipeDatabase = [
         title: "Tomato Cheese Skillet Melt",
         coreIngredients: ["tomato", "cheese"],
         pantryItems: ["butter", "garlic", "black pepper"],
-        ingredients: ["2 ripe tomatoes (sliced thick)", "1/2 cup grated cheese", "1 tbsp butter", "1 clove minced garlic", "Crushed black pepper to taste"],
+        ingredients: ["1. 2 ripe tomatoes (sliced thick)", "2. 1/2 cup grated cheese", "1 tbsp butter", "1 clove minced garlic", "Crushed black pepper to taste"],
         instructions: [
             "Melt butter in a pan on medium flame and sauté minced garlic for 30 seconds.",
             "Place thick tomato slices flat on the pan and sear for 2 minutes.",
@@ -97,7 +97,7 @@ const recipeDatabase = [
         title: "Healthy Chicken & Lettuce Salad Bowl",
         coreIngredients: ["chicken", "lettuce"],
         pantryItems: ["olive oil", "lemon juice", "salt", "black pepper"],
-        ingredients: ["150g chicken breast (cubed)", "2 cups fresh lettuce leaves (washed & chopped)", "1 tbsp olive oil", "1 tsp lemon juice", "Salt and crushed black pepper to taste"],
+        ingredients: ["1. 150g chicken breast (cubed)", "2. 2 cups fresh lettuce leaves (washed & chopped)", "1 tbsp olive oil", "1 tsp lemon juice", "Salt and crushed black pepper to taste"],
         instructions: [
             "Heat olive oil in a pan on medium flame, add chicken cubes, salt, and pepper.",
             "Sauté on medium flame for 6-8 minutes until fully cooked, golden, and tender.",
@@ -117,7 +117,7 @@ const recipeDatabase = [
         title: "Chicken & Potato Homestyle Curry",
         coreIngredients: ["chicken", "potato", "tomato"],
         pantryItems: ["oil", "onion", "garlic", "turmeric", "salt"],
-        ingredients: ["200g chicken pieces", "2 medium potatoes (peeled & halved)", "1 tomato (chopped)", "1 onion (chopped)", "1 tbsp oil", "1 tsp garlic paste", "1/2 tsp turmeric and salt to taste"],
+        ingredients: ["1. 200g chicken pieces", "2. 2 medium potatoes (peeled & halved)", "3. 1 tomato (chopped)", "1 onion (chopped)", "1 tbsp oil", "1 tsp garlic paste", "1/2 tsp turmeric and salt to taste"],
         instructions: [
             "Heat oil in a pan on medium flame, sauté chopped onions and garlic paste for 2-3 minutes until golden.",
             "Add chopped tomatoes and turmeric, cooking on medium flame for 3 minutes until soft.",
@@ -138,7 +138,8 @@ const PANTRY_INFERENCES = {
     noodles: ['soy sauce', 'garlic', 'green chilies', 'cooking oil'],
     rice: ['cumin seeds (jeera)', 'onion', 'ghee or oil', 'basic spices'],
     pasta: ['garlic', 'olive oil or butter', 'chili flakes', 'cheese or herbs'],
-    tomato: ['garlic', 'onion', 'olive oil or cooking oil', 'salt', 'black pepper']
+    tomato: ['garlic', 'onion', 'olive oil or cooking oil', 'salt', 'black pepper'],
+    turmeric: ['cumin seeds', 'coriander powder', 'oil', 'salt']
 };
 
 function sanitizeAndInferInputs(rawUserInput) {
@@ -162,7 +163,28 @@ function sanitizeAndInferInputs(rawUserInput) {
     };
 }
 
-// Generates up to 10 distinct dynamic recipe variations for any input combination
+// Precise culinary quantity mapper so ingredients never say "Standard portion of..."
+function getExactQuantity(ingredient) {
+    const ing = ingredient.toLowerCase().trim();
+    if (ing.includes('paneer')) return '200g paneer (cubed)';
+    if (ing.includes('curd') || ing.includes('yogurt')) return '1/2 cup curd (whisked smooth)';
+    if (ing.includes('turmeric')) return '1/4 tsp turmeric powder';
+    if (ing.includes('chicken')) return '200g chicken pieces';
+    if (ing.includes('potato')) return '2 medium potatoes (diced)';
+    if (ing.includes('tomato')) return '2 ripe tomatoes (chopped)';
+    if (ing.includes('bread')) return '2 slices of bread';
+    if (ing.includes('cheese')) return '1/2 cup grated cheese';
+    if (ing.includes('egg')) return '2 whole eggs';
+    if (ing.includes('noodles')) return '150g noodles (boiled)';
+    if (ing.includes('rice')) return '1 cup basmati rice';
+    if (ing.includes('onion')) return '1 medium onion (finely chopped)';
+    if (ing.includes('garlic')) return '3 cloves garlic (minced)';
+    if (ing.includes('oil') || ing.includes('butter')) return '1 tbsp cooking oil or butter';
+    if (ing.includes('salt')) return 'Salt to taste';
+    return `1 portion of ${ingredient}`;
+}
+
+// Generates up to 10 distinct dynamic recipes using flexible subsets and precise quantities
 function generateTenDynamicRecipes(coreItems, inferredStaples) {
     const styles = [
         "Skillet Sauté", "Homestyle Simmer", "Pan Toss & Roast", "Creamy Masala Gravy", 
@@ -171,27 +193,31 @@ function generateTenDynamicRecipes(coreItems, inferredStaples) {
     ];
 
     return styles.map((style, index) => {
-        const primaryCore = coreItems[index % coreItems.length] || 'Item';
-        const formattedCoreName = primaryCore.charAt(0).toUpperCase() + primaryCore.slice(1);
+        // Create flexible subsets: rotate through subsets of core items (e.g., all items, or subsets of 1-2 items)
+        let subsetSize = (index % 2 === 0) ? coreItems.length : Math.max(1, coreItems.length - 1);
+        let currentSubset = coreItems.slice(0, subsetSize);
         
+        const primaryCore = currentSubset[0] || coreItems[0] || 'Item';
+        const formattedCoreName = primaryCore.charAt(0).toUpperCase() + primaryCore.slice(1);
+
         return {
             title: `${formattedCoreName} & ${style}`,
-            coreIngredients: coreItems,
+            coreIngredients: currentSubset,
             pantryItems: inferredStaples.slice(0, 4),
             ingredients: [
-                ...coreItems.map(item => `Standard portion of ${item}`),
-                ...(inferredStaples.length > 0 ? inferredStaples.slice(0, 3).map(staple => `1 tbsp ${staple}`) : ["1 tbsp cooking oil", "Salt to taste"])
+                ...currentSubset.map((item, idx) => `${idx + 1}. ${getExactQuantity(item)}`),
+                ...(inferredStaples.length > 0 ? inferredStaples.slice(0, 3).map(staple => getExactQuantity(staple)) : ["1 tbsp cooking oil", "Salt to taste"])
             ],
             instructions: [
-                `Prep and clean all core ingredients (${coreItems.join(', ')}).`,
+                `Prep and clean your selected core ingredients (${currentSubset.join(', ')}).`,
                 `Heat 1 tbsp of oil or butter in a pan on medium flame for 1 minute.`,
                 `Add aromatics and spices (${inferredStaples.slice(0, 3).join(', ') || 'salt and pepper'}), sautéing for 2 minutes until fragrant.`,
-                `Toss in your main core items and cook on medium-high flame for 5-7 minutes until tender, well-coated, and delicious.`
+                `Toss in your core items and cook on medium-high flame for 5-7 minutes until tender, well-coated, and delicious.`
             ],
             altCookingMethod: {
                 appliance: "OTG / Microwave Method",
                 instructions: [
-                    "Combine your core ingredients and seasoning in a microwave-safe or oven-safe dish.",
+                    "Combine your ingredients and seasoning in a microwave-safe or oven-safe dish.",
                     "Cover lightly and cook on high power or bake at 180°C for 8-10 minutes until done."
                 ]
             }
@@ -214,10 +240,7 @@ export function findRecipes(userIngredients) {
         return recipe.coreIngredients.some(ing => userTypedIngredients.includes(ing));
     });
 
-    // If database matches are fewer than 10, pad or fully generate up to 10 recipes dynamically
     const dynamicRecipes = generateTenDynamicRecipes(userTypedIngredients, inferredPantryStaples);
-    
-    // Combine matched database recipes and dynamic recipes, ensuring up to 10 total
     const combinedPool = [...matched, ...dynamicRecipes];
 
     return combinedPool.slice(0, 10);

@@ -1,4 +1,4 @@
-// Expanded recipe database ensuring up to 3 diverse recipes can be generated
+// Expanded recipe database
 const recipeDatabase = [
     {
         title: "Aloo Tomato Quick Curry",
@@ -128,7 +128,6 @@ const recipeDatabase = [
     }
 ];
 
-// Comprehensive pantry inference engine for single or incomplete core inputs
 const PANTRY_INFERENCES = {
     curd: ['besan (gram flour)', 'turmeric', 'cumin seeds', 'mustard seeds', 'garlic'],
     yogurt: ['besan (gram flour)', 'turmeric', 'cumin seeds'],
@@ -142,7 +141,6 @@ const PANTRY_INFERENCES = {
     tomato: ['garlic', 'onion', 'olive oil or cooking oil', 'salt', 'black pepper']
 };
 
-// Input sanitization, plural normalization, and pantry inference
 function sanitizeAndInferInputs(rawUserInput) {
     if (!rawUserInput || typeof rawUserInput !== 'string') {
         return { coreItems: [], inferredStaples: [] };
@@ -164,10 +162,32 @@ function sanitizeAndInferInputs(rawUserInput) {
     };
 }
 
-// Helper to randomize array selection (up to 3)
-function getRandomRecipes(arr, count = 3) {
-    const shuffled = [...arr].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, count);
+// Dynamically synthesizes a custom recipe for ANY unknown input combination
+function generateDynamicRecipe(coreItems, inferredStaples) {
+    const formattedTitle = coreItems.map(i => i.charAt(0).toUpperCase() + i.slice(1)).join(' & ');
+    
+    return {
+        title: `Chef's Special ${formattedTitle} Skillet Sauté`,
+        coreIngredients: coreItems,
+        pantryItems: inferredStaples.slice(0, 4),
+        ingredients: [
+            ...coreItems.map(item => `Standard portion of ${item}`),
+            ...(inferredStaples.length > 0 ? inferredStaples.slice(0, 3).map(staple => `1 tbsp ${staple}`) : ["1 tbsp cooking oil", "Salt to taste"])
+        ],
+        instructions: [
+            `Prep and clean all your core ingredients (${coreItems.join(', ')}).`,
+            `Heat 1 tbsp of oil or butter in a pan on medium flame for 1 minute.`,
+            `Add aromatics and spices (${inferredStaples.slice(0, 3).join(', ') || 'salt and pepper'}), sautéing for 2 minutes until fragrant.`,
+            `Toss in your main core items and cook on medium-high flame for 5-7 minutes until tender, well-coated, and delicious.`
+        ],
+        altCookingMethod: {
+            appliance: "OTG / Microwave Method",
+            instructions: [
+                "Combine your core ingredients and seasoning in a microwave-safe or oven-safe dish.",
+                "Cover lightly and cook on high power or bake at 180°C for 8-10 minutes until done."
+            ]
+        }
+    };
 }
 
 let pendingRecipes = [];
@@ -181,12 +201,36 @@ export function findRecipes(userIngredients) {
 
     if (userTypedIngredients.length === 0) return [];
 
-    // Flexible subset matching: matches recipes where at least one core ingredient overlaps
-    const matched = recipeDatabase.filter(recipe => {
+    // Filter database for matches
+    let matched = recipeDatabase.filter(recipe => {
         return recipe.coreIngredients.some(ing => userTypedIngredients.includes(ing));
     });
 
-    return getRandomRecipes(matched, 3);
+    // Fallback: If no strict database match is found, dynamically synthesize recipes for ANY input!
+    if (matched.length === 0) {
+        matched = [
+            generateDynamicRecipe(userTypedIngredients, inferredPantryStaples),
+            {
+                title: `Homestyle ${userTypedIngredients[0].charAt(0).toUpperCase() + userTypedIngredients[0].slice(1)} & Spice Simmer`,
+                coreIngredients: userTypedIngredients,
+                pantryItems: inferredStaples = inferredPantryStaples.slice(0, 3),
+                ingredients: [
+                    `1 cup ${userTypedIngredients[0]}`,
+                    ...(userTypedIngredients[1] ? [`1/2 cup ${userTypedIngredients[1]}`] : []),
+                    "1 tbsp cooking oil",
+                    "Pinch of salt and turmeric"
+                ],
+                instructions: [
+                    "Heat oil in a pan on medium flame.",
+                    "Add your core ingredients along with basic spices and a splash of water.",
+                    "Cover with a lid, reduce flame to low (sim), and simmer for 6-8 minutes until cooked through."
+                ],
+                altCookingMethod: null
+            }
+        ];
+    }
+
+    return matched.slice(0, 3);
 }
 
 // Event Listener Setup
@@ -204,8 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pendingRecipes.length === 0) {
             resultsContainer.innerHTML = `
                 <div class="notice-box" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center;">
-                    <p style="color: #d9534f; font-weight: bold; font-size: 1.1rem;">Unfortunately, a proper meal can't be made from this.</p>
-                    <p style="color: #555; margin-top: 8px;">Please include core food items (like chicken, bread, eggs, tomatoes, or potatoes) and try again!</p>
+                    <p style="color: #d9534f; font-weight: bold; font-size: 1.1rem;">Please enter valid ingredients to generate recipes.</p>
                 </div>
             `;
             return;
@@ -274,22 +317,7 @@ function showCoreSelectionChecklist(container, suggestions) {
             .map(cb => cb.value);
 
         const finalAvailableCores = [...userTypedIngredients, ...userHasCore];
-
-        const validRecipes = pendingRecipes.filter(recipe => {
-            return recipe.coreIngredients.some(core => finalAvailableCores.includes(core));
-        });
-
-        if (validRecipes.length === 0) {
-            container.innerHTML = `
-                <div class="notice-box" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center;">
-                    <p style="color: #d9534f; font-weight: bold; font-size: 1.1rem;">Unfortunately, a proper meal can't be made from this.</p>
-                    <p style="color: #555; margin-top: 8px;">You are missing core ingredients required for these dishes. Please try different items!</p>
-                </div>
-            `;
-            return;
-        }
-
-        pendingRecipes = validRecipes;
+        pendingRecipes = findRecipes(finalAvailableCores.join(', '));
         showPantryCheck(container, finalAvailableCores);
     });
 }
@@ -361,21 +389,7 @@ function showPantrySelectionChecklist(container, allPantryItems) {
             .filter(cb => cb.checked)
             .map(cb => cb.value);
 
-        const validRecipes = pendingRecipes.filter(recipe => {
-            return recipe.pantryItems.every(item => userApprovedItems.includes(item));
-        });
-
-        if (validRecipes.length === 0) {
-            container.innerHTML = `
-                <div class="notice-box" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center;">
-                    <p style="color: #d9534f; font-weight: bold; font-size: 1.1rem;">Unfortunately, a proper meal can't be made with your selected items.</p>
-                    <p style="color: #555; margin-top: 8px;">Please check required pantry staples and try again!</p>
-                </div>
-            `;
-            return;
-        }
-
-        renderFinalResults(validRecipes, userApprovedItems, container);
+        renderFinalResults(pendingRecipes, userApprovedItems, container);
     });
 }
 
@@ -388,7 +402,6 @@ function renderFinalResults(recipes, pantryUsed, container) {
     `;
     
     recipes.forEach((recipe, index) => {
-        // Serial-numbered core ingredients mapping
         const coreUsedList = recipe.coreIngredients.map((core, idx) => `<li>${idx + 1}. ${core}</li>`).join('');
 
         html += `

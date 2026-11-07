@@ -162,7 +162,6 @@ function sanitizeAndInferInputs(rawUserInput) {
     };
 }
 
-// Dynamically synthesizes a custom recipe for ANY unknown input combination
 function generateDynamicRecipe(coreItems, inferredStaples) {
     const formattedTitle = coreItems.map(i => i.charAt(0).toUpperCase() + i.slice(1)).join(' & ');
     
@@ -201,19 +200,17 @@ export function findRecipes(userIngredients) {
 
     if (userTypedIngredients.length === 0) return [];
 
-    // Filter database for matches
     let matched = recipeDatabase.filter(recipe => {
         return recipe.coreIngredients.some(ing => userTypedIngredients.includes(ing));
     });
 
-    // Fallback: If no strict database match is found, dynamically synthesize recipes for ANY input!
     if (matched.length === 0) {
         matched = [
             generateDynamicRecipe(userTypedIngredients, inferredPantryStaples),
             {
                 title: `Homestyle ${userTypedIngredients[0].charAt(0).toUpperCase() + userTypedIngredients[0].slice(1)} & Spice Simmer`,
                 coreIngredients: userTypedIngredients,
-                pantryItems: inferredStaples = inferredPantryStaples.slice(0, 3),
+                pantryItems: inferredPantryStaples.slice(0, 3),
                 ingredients: [
                     `1 cup ${userTypedIngredients[0]}`,
                     ...(userTypedIngredients[1] ? [`1/2 cup ${userTypedIngredients[1]}`] : []),
@@ -233,7 +230,6 @@ export function findRecipes(userIngredients) {
     return matched.slice(0, 3);
 }
 
-// Event Listener Setup
 document.addEventListener('DOMContentLoaded', () => {
     const generateBtn = document.getElementById('generate-btn');
     if (!generateBtn) return;

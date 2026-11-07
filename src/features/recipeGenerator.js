@@ -128,6 +128,42 @@ const recipeDatabase = [
     }
 ];
 
+// Comprehensive pantry inference engine for single or incomplete core inputs
+const PANTRY_INFERENCES = {
+    curd: ['besan (gram flour)', 'turmeric', 'cumin seeds', 'mustard seeds', 'garlic'],
+    yogurt: ['besan (gram flour)', 'turmeric', 'cumin seeds'],
+    beef: ['onion', 'garlic', 'cooking oil or butter', 'salt', 'black pepper'],
+    chicken: ['onion', 'garlic', 'ginger', 'cooking oil', 'basic spices'],
+    potato: ['salt', 'black pepper', 'cooking oil', 'cumin or paprika'],
+    paneer: ['butter or oil', 'garam masala', 'tomato', 'onion', 'ginger-garlic paste'],
+    noodles: ['soy sauce', 'garlic', 'green chilies', 'cooking oil'],
+    rice: ['cumin seeds (jeera)', 'onion', 'ghee or oil', 'basic spices'],
+    pasta: ['garlic', 'olive oil or butter', 'chili flakes', 'cheese or herbs'],
+    tomato: ['garlic', 'onion', 'olive oil or cooking oil', 'salt', 'black pepper']
+};
+
+// Input sanitization, plural normalization, and pantry inference
+function sanitizeAndInferInputs(rawUserInput) {
+    if (!rawUserInput || typeof rawUserInput !== 'string') {
+        return { coreItems: [], inferredStaples: [] };
+    }
+
+    let cleaned = rawUserInput.toLowerCase().trim();
+    let tokens = cleaned.split(/[\s,]+/).filter(t => t.length > 0).map(t => t.replace(/s$/, ''));
+    let inferredAdditions = [];
+
+    for (let token of tokens) {
+        if (PANTRY_INFERENCES[token]) {
+            inferredAdditions.push(...PANTRY_INFERENCES[token]);
+        }
+    }
+
+    return {
+        coreItems: [...new Set(tokens)],
+        inferredStaples: [...new Set(inferredAdditions)]
+    };
+}
+
 // Helper to randomize array selection (up to 3)
 function getRandomRecipes(arr, count = 3) {
     const shuffled = [...arr].sort(() => 0.5 - Math.random());
@@ -136,11 +172,16 @@ function getRandomRecipes(arr, count = 3) {
 
 let pendingRecipes = [];
 let userTypedIngredients = [];
+let inferredPantryStaples = [];
 
 export function findRecipes(userIngredients) {
-    userTypedIngredients = userIngredients.toLowerCase().split(',').map(i => i.trim()).filter(Boolean);
+    const parsed = sanitizeAndInferInputs(userIngredients);
+    userTypedIngredients = parsed.coreItems;
+    inferredPantryStaples = parsed.inferredStaples;
+
     if (userTypedIngredients.length === 0) return [];
 
+    // Flexible subset matching: matches recipes where at least one core ingredient overlaps
     const matched = recipeDatabase.filter(recipe => {
         return recipe.coreIngredients.some(ing => userTypedIngredients.includes(ing));
     });
@@ -182,7 +223,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function showCoreItemsCheck(container, missingItems) {
-    // Generate unique dynamic extra core items without duplicates
     const pool = ["bread", "eggs", "potato", "cheese", "chicken", "tomato", "rice", "onion", "lettuce"];
     const dynamicExtras = pool.filter(item => 
         !userTypedIngredients.includes(item) && !missingItems.includes(item)
@@ -202,12 +242,10 @@ function showCoreItemsCheck(container, missingItems) {
     `;
 
     document.getElementById('core-opt-yes').addEventListener('click', () => {
-        // If user says Yes, proceed directly with all required missing core items
         showPantryCheck(container, [...userTypedIngredients, ...missingItems]);
     });
 
     document.getElementById('core-opt-no').addEventListener('click', () => {
-        // If user says No, display the interactive checklist with unique items
         showCoreSelectionChecklist(container, combinedSuggestions);
     });
 }
@@ -238,7 +276,7 @@ function showCoreSelectionChecklist(container, suggestions) {
         const finalAvailableCores = [...userTypedIngredients, ...userHasCore];
 
         const validRecipes = pendingRecipes.filter(recipe => {
-            return recipe.coreIngredients.every(core => finalAvailableCores.includes(core));
+            return recipe.coreIngredients.some(core => finalAvailableCores.includes(core));
         });
 
         if (validRecipes.length === 0) {
@@ -257,7 +295,7 @@ function showCoreSelectionChecklist(container, suggestions) {
 }
 
 function showPantryCheck(container, availableCores) {
-    const allPantryItems = [...new Set(pendingRecipes.flatMap(r => r.pantryItems))];
+    const allPantryItems = [...new Set([...pendingRecipes.flatMap(r => r.pantryItems), ...inferredPantryStaples])];
     const neverAskAgain = localStorage.getItem('pantryApprovedAlways') === 'true';
 
     if (neverAskAgain || allPantryItems.length === 0) {
@@ -350,15 +388,25 @@ function renderFinalResults(recipes, pantryUsed, container) {
     `;
     
     recipes.forEach((recipe, index) => {
+        // Serial-numbered core ingredients mapping
+        const coreUsedList = recipe.coreIngredients.map((core, idx) => `<li>${idx + 1}. ${core}</li>`).join('');
+
         html += `
             <div class="recipe-card" style="background: white; padding: 16px; border-radius: 8px; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
                 <h3>${recipe.title}</h3>
                 
                 <div class="recipe-section" style="margin-top: 10px;">
-                    <strong>Ingredients & Quantities:</strong>
-                    <ul style="margin-left: 20px; margin-top: 5px;">
-                        ${recipe.ingredients.map(ing => `<li>${ing}</li>`).join('')}
-                    </ul>
+                    <strong>Ingredients Breakdown:</strong>
+                    <div style="margin-top: 5px; margin-left: 10px;">
+                        <p style="margin: 4px 0; font-weight: bold; font-size: 0.9rem; color: #333;">Core Ingredients Used:</p>
+                        <ul style="margin-left: 20px; margin-bottom: 6px;">
+                            ${coreUsedList}
+                        </ul>
+                        <p style="margin: 4px 0; font-size: 0.9rem; color: #555;"><strong>Full Recipe Quantities:</strong></p>
+                        <ul style="margin-left: 20px; margin-top: 2px;">
+                            ${recipe.ingredients.map(ing => `<li>${ing}</li>`).join('')}
+                        </ul>
+                    </div>
                 </div>
 
                 <div class="recipe-section" style="margin-top: 10px;">

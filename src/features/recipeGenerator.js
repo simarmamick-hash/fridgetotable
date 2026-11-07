@@ -1,5 +1,5 @@
 // src/features/recipeGenerator.js
-// FridgeToTable - Autonomous Combinatorial Engine (Fixed Cuisines, Named Quantities, Independent Step Generators)
+// FridgeToTable - Code S (Autonomous Combinatorial Engine with Unique Alternative Methods)
 
 function sanitizeAndInferInputs(rawUserInput) {
     if (!rawUserInput || typeof rawUserInput !== 'string') {
@@ -10,7 +10,6 @@ function sanitizeAndInferInputs(rawUserInput) {
     return { coreItems: [...new Set(tokens)] };
 }
 
-// Fixed: Explicitly includes the ingredient name in every quantity line
 function getExactQuantity(item) {
     const clean = item.toLowerCase().trim();
     if (clean.includes('paneer') || clean.includes('tofu')) return `200g ${item} (cubed)`;
@@ -34,7 +33,7 @@ const GLOBAL_CUISINES = [
 
 const GLOBAL_ADJECTIVES = ["Tuscan", "Street-Style", "Bistro", "Dhaba-Style", "Izakaya", "Provencal", "Catalan", "Aegean", "Mughlai", "Hearth-Roasted"];
 
-// 1. Slow Braise Instruction Generator (6-8 detailed steps)
+// 1. Slow Braise
 function getBraiseSteps(core) {
     return [
         `Pat your core ingredients (${core.join(', ')}) thoroughly dry with kitchen paper to prep for braising.`,
@@ -47,7 +46,7 @@ function getBraiseSteps(core) {
     ];
 }
 
-// 2. Wok Toss Instruction Generator (6-7 detailed steps)
+// 2. Wok Toss
 function getWokSteps(core) {
     return [
         `Slice all core components (${core.join(', ')}) into thin, uniform strips or bite-sized pieces for high-heat cooking.`,
@@ -60,7 +59,7 @@ function getWokSteps(core) {
     ];
 }
 
-// 3. Cast-Iron Skillet Sear Instruction Generator (7-8 detailed steps)
+// 3. Skillet Sear
 function getSkilletSteps(core) {
     return [
         `Dice or portion all core ingredients (${core.join(', ')}) into clean, synchronized cooking sizes.`,
@@ -73,7 +72,7 @@ function getSkilletSteps(core) {
     ];
 }
 
-// 4. Creamy Emulsion Pan-Bake Instruction Generator (6-7 detailed steps)
+// 4. Creamy Bake
 function getBakeSteps(core) {
     return [
         `Pre-boil or tenderize your base ingredients (${core.join(', ')}) lightly in salted water for 5 minutes; drain well.`,
@@ -86,7 +85,7 @@ function getBakeSteps(core) {
     ];
 }
 
-// 5. Hearth Confit & Roast Instruction Generator (6 steps)
+// 5. Hearth Roast
 function getRoastSteps(core) {
     return [
         `Submerge your core items (${core.join(', ')}) in a small roasting dish with 2 tbsp of olive oil and garlic cloves.`,
@@ -99,11 +98,61 @@ function getRoastSteps(core) {
 }
 
 const TECHNIQUE_FACTORIES = [
-    { name: "Slow-Braised Infusion Stew", time: "30 mins", pantry: ["olive oil", "garlic cloves", "bay leaves", "onion", "sea salt", "black pepper"], getSteps: getBraiseSteps },
-    { name: "High-Heat Wok Toss & Glaze", time: "15 mins", pantry: ["sesame oil", "soy sauce", "fresh ginger", "garlic cloves", "green chilies", "cooking oil", "salt"], getSteps: getWokSteps },
-    { name: "Cast-Iron Skillet Sear & Crust", time: "20 mins", pantry: ["butter", "smoked paprika", "ground cumin", "lime juice", "garlic", "salt", "black pepper"], getSteps: getSkilletSteps },
-    { name: "Creamy Emulsion Pan-Bake", time: "25 mins", pantry: ["extra virgin olive oil", "garlic", "parmesan cheese", "fresh herbs", "cream or yogurt", "salt"], getSteps: getBakeSteps },
-    { name: "Rustic Hearth Confit & Roast", time: "28 mins", pantry: ["butter", "olive oil", "garlic cloves", "dried herbs", "sea salt", "black pepper"], getSteps: getRoastSteps }
+    { 
+        name: "Slow-Braised Infusion Stew", 
+        time: "30 mins", 
+        pantry: ["olive oil", "garlic cloves", "bay leaves", "onion", "sea salt", "black pepper"], 
+        getSteps: getBraiseSteps,
+        appliance: "Covered Oven Casserole Method",
+        altSteps: [
+            "Transfer your braise ingredients and liquid into an oven-safe Dutch oven or casserole dish.",
+            "Seal tightly with a lid or double layer of foil and bake at 160°C for 35 minutes for deep tender infusion."
+        ]
+    },
+    { 
+        name: "High-Heat Wok Toss & Glaze", 
+        time: "15 mins", 
+        pantry: ["sesame oil", "soy sauce", "fresh ginger", "garlic cloves", "green chilies", "cooking oil", "salt"], 
+        getSteps: getWokSteps,
+        appliance: "High-Heat Sheet Pan Roast Method",
+        altSteps: [
+            "Spread your tossed ingredients thinly on a pre-heated metal baking sheet.",
+            "Roast in your oven at 220°C for 8 minutes for a crisp sheet-pan stir-fry finish."
+        ]
+    },
+    { 
+        name: "Cast-Iron Skillet Sear & Crust", 
+        time: "20 mins", 
+        pantry: ["butter", "smoked paprika", "ground cumin", "lime juice", "garlic", "salt", "black pepper"], 
+        getSteps: getSkilletSteps,
+        appliance: "Oven Broil Method",
+        altSteps: [
+            "Arrange your seasoned ingredients on a wire baking rack over a tray.",
+            "Broil on the top rack of your oven at 220°C for 6-8 minutes until charred and blistered."
+        ]
+    },
+    { 
+        name: "Creamy Emulsion Pan-Bake", 
+        time: "25 mins", 
+        pantry: ["extra virgin olive oil", "garlic", "parmesan cheese", "fresh herbs", "cream or yogurt", "salt"], 
+        getSteps: getBakeSteps,
+        appliance: "Deep Microwave Casserole Method",
+        altSteps: [
+            "Combine your base ingredients and creamy sauce components in a deep microwave-safe glass bowl, covering loosely.",
+            "Heat on high power for 8-10 minutes, stirring halfway through until unified."
+        ]
+    },
+    { 
+        name: "Rustic Hearth Confit & Roast", 
+        time: "28 mins", 
+        pantry: ["butter", "olive oil", "garlic cloves", "dried herbs", "sea salt", "black pepper"], 
+        getSteps: getRoastSteps,
+        appliance: "Low-Temp Slow-Roast Foil Packet",
+        altSteps: [
+            "Place your ingredients and flavored oil securely inside a heavy-duty aluminum foil packet.",
+            "Bake at 150°C for 30 minutes for a delicate, slow-melting confit texture."
+        ]
+    }
 ];
 
 function generateAutonomousGlobalRecipes(coreItems) {
@@ -111,7 +160,7 @@ function generateAutonomousGlobalRecipes(coreItems) {
     let shuffledCuisines = [...GLOBAL_CUISINES].sort(() => Math.random() - 0.5);
 
     for (let i = 0; i < 10; i++) {
-        let cuisineName = shuffledCuisines[i % shuffledCuisines.length]; // Fixed: Real cuisine name
+        let cuisineName = shuffledCuisines[i % shuffledCuisines.length];
         let technique = TECHNIQUE_FACTORIES[i % TECHNIQUE_FACTORIES.length];
         
         let primary = coreItems[i % coreItems.length] || 'Main Ingredient';
@@ -128,7 +177,7 @@ function generateAutonomousGlobalRecipes(coreItems) {
 
         recipes.push({
             title: title,
-            cuisine: cuisineName, // Fixed: Displays true cuisine like Italian, Mexican, etc.
+            cuisine: cuisineName,
             totalTime: technique.time,
             coreIngredients: currentSubset,
             pantryItems: technique.pantry,
@@ -136,13 +185,10 @@ function generateAutonomousGlobalRecipes(coreItems) {
                 ...currentSubset.map((item, idx) => `${idx + 1}. ${getExactQuantity(item)}`),
                 ...technique.pantry.slice(0, 3).map(p => `1 tbsp ${p}`)
             ],
-            instructions: technique.getSteps(currentSubset), // Fixed: Completely independent instructions per technique!
+            instructions: technique.getSteps(currentSubset),
             altCookingMethod: {
-                appliance: "Alternative Convection / Microwave Method",
-                instructions: [
-                    `Transfer prepared ingredients into an oven-safe baking dish or microwave bowl.`,
-                    `Bake at 190°C or heat on medium-high power for 12-15 minutes until thoroughly cooked.`
-                ]
+                appliance: technique.appliance, // Fixed: Now uniquely tailored to each cooking technique!
+                instructions: technique.altSteps
             }
         });
     }

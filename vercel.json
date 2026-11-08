@@ -1,0 +1,7 @@
+   {
+     "functions": {
+       "api/recipes.js": {
+         "maxDuration": 30
+       }
+     }
+   }
